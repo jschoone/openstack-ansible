@@ -1,0 +1,141 @@
+---
+- name: Install {{ database_name }}
+  package:
+    name: "{{ database_packages }}"
+    state: present
+
+- name: Configure {{ database_name }} for OpenStack
+  template:
+    src: etc/my.cnf.d/openstack.cnf.j2
+    dest: /etc/my.cnf.d/openstack.cnf
+  notify:
+  - restart mariadb
+
+- name: enable {{ database_name }}
+  service:
+    name: mariadb
+    state: started
+    enabled: true
+
+- name: Check if mysql_secure_install already ran
+  stat:
+    path: /etc/mysql_secure_install_done
+  register: mysql_secure_install_stat
+  tags:
+  - mysql_secure_install
+
+- name: MySQL Secure Installation
+  block:
+  - name: Change root user password on first run
+    mysql_user:
+      name: root
+      password: "{{ database_root_password }}"
+      host: "{{ item }}"
+      login_unix_socket: "{{ database_socket }}"
+    with_items:
+    - 127.0.0.1
+    - ::1
+    - localhost
+    ignore_errors: true
+
+  - name: Delete anonymous MySQL user
+    mysql_user:
+      name: ""
+      host: "{{ item }}"
+      state: absent
+      login_unix_socket: "{{ database_socket }}"
+      login_user: root
+      login_password: "{{ database_root_password }}"
+    with_items:
+      - localhost
+      - "{{ansible_nodename}}"
+
+  - name: Delete Hostname based MySQL user
+    mysql_user:
+      name: root
+      host: "{{ ansible_nodename }}"
+      state: absent
+      login_user: root
+      login_password: "{{ database_root_password }}"
+      login_unix_socket: "{{ database_socket }}"
+
+  - name: Remove MySQL test database
+    mysql_db:
+      name: test
+      state: absent
+      login_user: root
+      login_password: "{{ database_root_password }}"
+      login_unix_socket: "{{ database_socket }}"
+  - name: MySQL Secure Installation Done
+    file:
+      path: /etc/mysql_secure_install_done
+      state: touch
+  when: not mysql_secure_install_stat.stat.exists
+  tags:
+  - mysql_secure_install
+
+- name: Install "{{ mq_name }}"
+  package:
+    name: "{{ mq_service }}"
+    state: present
+  tags:
+  - mq
+
+- name: Enable "{{ mq_name }}"
+  service:
+    name: "{{ mq_service }}"
+    state: started
+    enabled: true
+  tags:
+  - mq
+
+- name: Add User "{{ mq_user }}"
+  rabbitmq_user:
+    user: "{{ mq_user }}"
+    password: "{{ mq_pass }}"
+    permissions:
+    - vhost: '/'
+      configure_priv: ".*"
+      read_priv: ".*"
+      write_priv: ".*"
+    state: present
+  tags:
+  - mq
+
+- name: Install memcached
+  package:
+    name:
+    - memcached
+    - python3-memcached
+
+- name: Configure memcached
+  lineinfile:
+    path: "{{ memcached_config_path }}"
+    regex: '^OPTIONS='
+    line: 'OPTIONS="-l 127.0.0.1,::1,controller"'
+  notify:
+  - restart memcached
+
+- name: Enable memcached
+  service:
+    name: memcached
+    enabled: true
+    state: started
+
+- name: Install {{ etcd_service }}
+  package:
+    name: "{{ etcd_service }}"
+    state: present
+
+- name: Configure {{ etcd_service }}
+  template:
+    src: etc/etcd/etcd.conf.j2
+    dest: /etc/etcd/etcd.conf
+  notify:
+  - restart etcd
+
+- name: Enable {{ etcd_service }}
+  service:
+    name: "{{ etcd_service }}"
+    state: started
+    enabled: true

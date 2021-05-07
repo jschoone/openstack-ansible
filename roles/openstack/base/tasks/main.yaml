@@ -1,0 +1,53 @@
+---
+- name: Build /etc/hosts file
+  blockinfile:
+    create: true
+    path: /etc/hosts
+    block: |
+        {% for host in groups['all'] %}
+        {{ hostvars[host]['ansible_facts'][management_interface]['ipv4']['address'] }} {{ host }}
+        {% endfor %}
+- name: Install base packages
+  package:
+    name: "{{ packages }}"
+    state: present
+
+- name: install chrony
+  package:
+    name: chrony
+    state: present
+
+- name: configure chrony
+  template:
+    src: etc/chrony.conf.j2
+    dest: "{{ chrony.conf_destination[ansible_os_family] }}"
+  notify:
+  - restart chronyd
+
+- name: enable chronyd
+  service:
+    name: chronyd
+    enabled: true
+
+- name: Enable OpenStack Repository
+  package:
+    name: centos-release-openstack-victoria
+    state: present
+- name: Enable PowerTools
+  lineinfile:
+    path: /etc/yum.repos.d/CentOS-Linux-PowerTools.repo
+    regexp: 'enabled=0'
+    line: 'enabled=1'
+- name: Install RDO Release
+  dnf:
+    name: 'https://rdoproject.org/repos/rdo-release.el8.rpm'
+    state: present
+    disable_gpg_check: yes
+- name: Install OpenStack Client
+  package:
+    name: python3-openstackclient
+    state: present
+- name: Install OpenStack-SELinux
+  package:
+    name: openstack-selinux
+    state: present

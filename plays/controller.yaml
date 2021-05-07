@@ -1,0 +1,11 @@
+---
+- name: Install Controller
+  hosts: controller
+  become: true
+  vars:
+    proxy_url: ""
+    #  environment:
+    #    http_proxy: "{{ proxy_url }}"
+    #    https_proxy: "{{ proxy_url }}"
+  roles:
+  - { role: openstack/controller, tags: ["controller"] }

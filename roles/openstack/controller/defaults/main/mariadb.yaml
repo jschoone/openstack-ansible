@@ -1,0 +1,12 @@
+database_packages:
+- mariadb
+- mariadb-server
+- python3-PyMySQL
+
+database_root_password: overrideme
+database_name: MariaDB
+database_service: mariadb
+database_socket: "{{ _database_socket[ansible_os_family] }}"
+_database_socket:
+  Debian: /var/run/mysqld/mysqld.sock
+  RedHat: /var/lib/mysql/mysql.sock

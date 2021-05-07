@@ -1,0 +1,8 @@
+packages:
+- network-scripts
+- vim
+
+chrony:
+  conf_destination:
+    Debian: /etc/chrony/chrony.conf
+    RedHat: /etc/chrony.conf

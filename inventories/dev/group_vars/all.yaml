@@ -1,0 +1,4 @@
+---
+ansible_user: vagrant
+management_interface: eth0
+provider_interface: eth0

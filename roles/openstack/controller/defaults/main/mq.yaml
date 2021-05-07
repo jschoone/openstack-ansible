@@ -1,0 +1,5 @@
+---
+mq_name: RabbitMQ
+mq_service: rabbitmq-server
+mq_user: openstack
+mq_pass: RABBIT_PASS

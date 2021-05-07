@@ -1,0 +1,9 @@
+---
+- name: Full System Upgrade
+  become: true
+  hosts: all
+  tasks:
+  - name: Update all packages
+    package:
+      name: '*'
+      state: latest

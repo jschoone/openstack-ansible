@@ -1,0 +1,11 @@
+---
+- name: Install and configure Base Software
+  hosts: all
+  become: true
+  vars:
+    proxy_url: ""
+    #  environment:
+    #    http_proxy: "{{ proxy_url }}"
+    #    https_proxy: "{{ proxy_url }}"
+  roles:
+  - { role: openstack/base, tags: ["base"] }

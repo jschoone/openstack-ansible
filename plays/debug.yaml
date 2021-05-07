@@ -1,0 +1,25 @@
+---
+- name: debug playbook
+  hosts: controller
+  user: vagrant
+  tasks:
+  - name: print ip address of {{ management_interface }}
+    debug:
+      msg: "{{ ansible_facts[management_interface]['ipv4']['address'] }}"
+
+  - name: Build hosts file
+    blockinfile:
+      create: true
+      path: /tmp/test
+      block: |
+          {% for host in groups['all'] %}
+          {{ hostvars[host]['ansible_facts'][management_interface]['ipv4']['address'] }} {{ host }}
+          {% endfor %}
+
+
+
+  - name: Build hosts file with items
+    debug:
+      #msg: "{{ hostvars[item]['ansible_facts'][management_interface]['ipv4'] }} {{ host }}"
+      msg: "{{ hostvars[item]['ansible_facts'][management_interface]['ipv4']['address'] }} {{ item }}"
+    with_items: "{{ groups['all'] }}"

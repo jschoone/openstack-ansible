@@ -1,0 +1,10 @@
+pool 2.centos.pool.ntp.org iburst
+driftfile /var/lib/chrony/drift
+makestep 1.0 3
+rtcsync
+{% if inventory_hostname in groups['controller'] %}
+allow 192.168.0.0/16
+{% endif %}
+keyfile /etc/chrony.keys
+leapsectz right/UTC
+logdir /var/log/chrony
