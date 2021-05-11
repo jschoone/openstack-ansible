@@ -1,25 +1,36 @@
 ---
 - name: debug playbook
   hosts: controller
-  user: vagrant
+  vars:
+    arch: "{{ _arch[ansible_architecture] }}"
+    _arch:
+      aarch: arm64
+      x86_64: amd64
+    terraform_version: 0.15.3
+    terraform_url: https://releases.hashicorp.com/terraform/{{ terraform_version }}/terraform_{{ terraform_version }}_linux_{{ arch }}.zip
   tasks:
   - name: print ip address of {{ management_interface }}
     debug:
       msg: "{{ ansible_facts[management_interface]['ipv4']['address'] }}"
-
-  - name: Build hosts file
-    blockinfile:
-      create: true
-      path: /tmp/test
-      block: |
-          {% for host in groups['all'] %}
-          {{ hostvars[host]['ansible_facts'][management_interface]['ipv4']['address'] }} {{ host }}
-          {% endfor %}
-
-
-
-  - name: Build hosts file with items
+  - name: Print {{ terraform_url }}
     debug:
-      #msg: "{{ hostvars[item]['ansible_facts'][management_interface]['ipv4'] }} {{ host }}"
-      msg: "{{ hostvars[item]['ansible_facts'][management_interface]['ipv4']['address'] }} {{ item }}"
-    with_items: "{{ groups['all'] }}"
+      var: terraform_url
+
+  - name: Database dir informations
+    stat:
+      path: /var/lib/mysql/keystone
+    register: keystone_db_dir
+
+  - name: print infos
+    debug:
+      var: keystone_db_dir
+
+  - name: Blocktest
+    block:
+    - name: print blocks
+      debug:
+        msg: "MOIN"
+    - name: print blocks2
+      debug:
+        msg: "MOIN2"
+    when: keystone_db_dir.stat.blocks == 0
