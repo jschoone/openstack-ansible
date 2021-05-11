@@ -6,3 +6,6 @@ controller01
 
 [compute]
 compute01
+
+[identity]
+controller01

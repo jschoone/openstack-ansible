@@ -1,0 +1,7 @@
+---
+arch: "{{ _arch[ansible_architecture] }}"
+_arch:
+  aarch: arm64
+  x86_64: amd64
+terraform_version: 0.15.3
+terraform_url: https://releases.hashicorp.com/terraform/{{ terraform_version }}/terraform_{{ terraform_version }}_linux_{{ arch }}.zip

@@ -1,0 +1,6 @@
+---
+- name: Install Keystone
+  hosts: identity
+  become: true
+  roles:
+  - { role: openstack/keystone, tags: ["keystone"] }

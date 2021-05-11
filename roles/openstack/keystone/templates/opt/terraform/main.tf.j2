@@ -1,0 +1,24 @@
+terraform {
+  required_version = ">= 0.14.0"
+  required_providers {
+    openstack = {
+      source = "terraform-provider-openstack/openstack"
+    }
+  }
+}
+
+# Configure the OpenStack Provider
+provider "openstack" {
+  auth_url = "{{ keystone_auth_url }}"
+  tenant_name = "{{ keystone_admin_project_name }}"
+  password = "{{ keystone_admin_pass }}"
+  user_name = "{{ keystone_admin_user }}"
+  region = "{{ keystone_region }}"
+  user_domain_name = "{{ keystone_admin_user_domain_name }}"
+  project_domain_name = "{{ keystone_admin_project_domain_name }}"
+}
+
+resource "openstack_identity_project_v3" "project_1" {
+  name        = "{{ keystone_init_project }}"
+  description = "{{ keystone_init_project_desc }}"
+}

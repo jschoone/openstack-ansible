@@ -139,3 +139,9 @@
     name: "{{ etcd_service }}"
     state: started
     enabled: true
+
+- name: Install terraform
+  unarchive:
+    src: "{{ terraform_url }}"
+    dest: /usr/local/bin
+    remote_src: yes

@@ -1,0 +1,99 @@
+---
+- name: Create database {{ keystone_database }}
+  mysql_db:
+    name: "{{ keystone_database }}"
+    login_user: "{{ database_user }}"
+    login_password: "{{ database_pass }}"
+    login_unix_socket: "{{ database_socket }}"
+    state: present
+
+- name: Grant User {{ keystone_database_user }} All Privileges on {{ keystone_database }}
+  mysql_user:
+    name: "{{ keystone_database_user }}"
+    password: "{{ keystone_database_pass }}"
+    priv: "{{ keystone_database_privs }}"
+    host: "{{ item }}"
+    login_user: "{{ database_user }}"
+    login_password: "{{ database_pass }}"
+    login_unix_socket: "{{ database_socket }}"
+  with_items:
+  - localhost
+  - '%'
+  - "{{ database_host }}"
+
+- name: Get Database Dir Informations
+  stat:
+    path: "{{ database_dir }}/{{ keystone_database }}"
+  register: keystone_db_dir
+
+- name: Install components
+  package:
+    name: "{{ keystone_packages }}"
+    state: present
+
+- name: Configure Keystone
+  template:
+    src: etc/keystone/keystone.conf.j2
+    dest: /etc/keystone/keystone.conf
+    backup: true
+
+- name: print {{ keystone_db_dir.stat.blocks }}
+  debug:
+    var: keystone_db_dir.stat.blocks
+
+- name: Init Database and Fernet Setup
+  block:
+  - name: Populate the Identity service database
+    command: keystone-manage db_sync
+    become_user: "{{ keystone_user }}"
+    become: true
+  - name: Initialize Fernet key repositories. Fernet Setup
+    command: keystone-manage fernet_setup --keystone-user {{ keystone_user }} --keystone-group {{ keystone_group }}
+  - name: Initialize Fernet key repositories. Credential Setup
+    command: keystone-manage credential_setup --keystone-user {{ keystone_user }} --keystone-group {{ keystone_group }}
+  - name: Bootstrap Identity Service
+    shell: |
+        keystone-manage bootstrap --bootstrap-password {{ keystone_admin_pass }} \
+        --bootstrap-admin-url http://controller:5000/v3/ \
+        --bootstrap-internal-url http://controller:5000/v3/ \
+        --bootstrap-public-url http://controller:5000/v3/ \
+        --bootstrap-region-id RegionOne
+  when: keystone_db_dir.stat.blocks == '0'
+
+- name: Create wsgi symlink
+  ansible.builtin.file:
+    src: /usr/share/keystone/wsgi-keystone.conf
+    dest: /etc/httpd/conf.d/wsgi-keystone.conf
+    state: link
+
+- name: Configure httpd
+  template:
+    src: etc/httpd/conf/httpd.conf.j2
+    dest: /etc/httpd/conf/httpd.conf
+    backup: true
+  notify:
+  - restart httpd
+
+- name: Enable httpd
+  service:
+    name: httpd
+    state: started
+    enabled: true
+
+- name: Make sure {{ terraform_dir }} exists
+  file:
+    path: "{{ terraform_dir }}"
+    state: directory
+
+- name: Terraform Definition Files
+  template:
+    src: opt/terraform/main.tf.j2
+    dest: "{{ terraform_dir }}/main.tf"
+
+
+- name: Create Project {{ keystone_init_project }}
+  terraform:
+    project_path: "{{ terraform_dir }}"
+    state: present
+    binary_path: /usr/local/bin/terraform
+    force_init: true
