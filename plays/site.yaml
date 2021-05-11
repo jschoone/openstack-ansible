@@ -1,3 +1,4 @@
 ---
 - import_playbook: base.yaml
 - import_playbook: controller.yaml
+- import_playbook: keystone.yaml

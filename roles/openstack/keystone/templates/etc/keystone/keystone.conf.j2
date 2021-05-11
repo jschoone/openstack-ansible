@@ -1,0 +1,4 @@
+[database]
+connection = mysql+pymysql://{{ keystone_database_user }}:{{ keystone_database_pass }}@controller/{{ keystone_database }}
+[token]
+provider = {{ keystone_database_provider }}
