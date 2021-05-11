@@ -18,8 +18,11 @@ keystone_packages:
 - openstack-keystone
 - httpd
 - python3-mod_wsgi
+
 keystone_init_project: default
 keystone_init_project_desc: "Service Project"
+keystone_init_domain: example
+keystone_init_domain_desc: "Example Demo"
 
 keystone_auth_url: 'http://controller:5000/v3'
 keystone_admin_pass: ADMIN_PASS
@@ -31,3 +34,8 @@ keystone_region: RegionOne
 keystone_identity_api_version: 3
 
 terraform_dir: /opt/terraform
+
+keystone_demo_project_name: myproject
+keystone_demo_project_desc: "Demo Project"
+keystone_demo_project_domain: default
+keystone_demo_project_user: myuser
