@@ -9,16 +9,34 @@ terraform {
 
 # Configure the OpenStack Provider
 provider "openstack" {
-  auth_url = "{{ keystone_auth_url }}"
-  tenant_name = "{{ keystone_admin_project_name }}"
-  password = "{{ keystone_admin_pass }}"
-  user_name = "{{ keystone_admin_user }}"
-  region = "{{ keystone_region }}"
-  user_domain_name = "{{ keystone_admin_user_domain_name }}"
-  project_domain_name = "{{ keystone_admin_project_domain_name }}"
 }
 
-resource "openstack_identity_project_v3" "project_1" {
+data "openstack_identity_project_v3" "{{ keystone_init_project }}" {
+  is_domain = true
+  name = "{{ keystone_init_project }}"
+}
+
+resource "openstack_identity_project_v3" "{{ keystone_init_domain }}" {
+  is_domain = true
+  name = "{{ keystone_init_domain }}"
+  description = "{{ keystone_init_domain_desc }}"
+}
+
+resource "openstack_identity_project_v3" "{{ keystone_init_project }}" {
   name        = "{{ keystone_init_project }}"
   description = "{{ keystone_init_project_desc }}"
+}
+
+resource "openstack_identity_project_v3" "{{ keystone_demo_project_name }}" {
+  name        = "{{ keystone_demo_project_name }}"
+  description = "{{ keystone_demo_project_desc }}"
+  domain_id   = data.openstack_identity_project_v3.{{ keystone_init_project }}.id
+}
+
+resource "openstack_identity_user_v3" "{{ keystone_demo_project_user }}" {
+  default_project_id = openstack_identity_project_v3.{{ keystone_demo_project_name }}.id
+  name               = "{{ keystone_demo_project_user }}"
+  password = "password123"
+  ignore_change_password_upon_first_use = true
+  domain_id   = data.openstack_identity_project_v3.{{ keystone_init_project }}.id
 }
