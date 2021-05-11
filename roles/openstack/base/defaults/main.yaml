@@ -1,6 +1,7 @@
 packages:
 - network-scripts
 - vim
+- unzip
 
 chrony:
   conf_destination:
