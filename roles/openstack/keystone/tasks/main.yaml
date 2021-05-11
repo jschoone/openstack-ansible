@@ -39,7 +39,7 @@
 
 - name: print {{ keystone_db_dir.stat.blocks }}
   debug:
-    var: keystone_db_dir.stat.blocks
+    var: keystone_db_dir
 
 - name: Init Database and Fernet Setup
   block:
@@ -58,7 +58,7 @@
         --bootstrap-internal-url http://controller:5000/v3/ \
         --bootstrap-public-url http://controller:5000/v3/ \
         --bootstrap-region-id RegionOne
-  when: keystone_db_dir.stat.blocks == '0'
+  when: keystone_db_dir.stat.blocks == 0
 
 - name: Create wsgi symlink
   ansible.builtin.file:
@@ -80,6 +80,14 @@
     state: started
     enabled: true
 
+- name: Create adminrc file
+  template:
+    src: root/adminrc.j2
+    dest: ~ansible/adminrc
+    owner: ansible
+    group: ansible
+    mode: '0755'
+
 - name: Make sure {{ terraform_dir }} exists
   file:
     path: "{{ terraform_dir }}"
@@ -97,3 +105,11 @@
     state: present
     binary_path: /usr/local/bin/terraform
     force_init: true
+  environment:
+    OS_USERNAME: "{{ keystone_admin_user }}"
+    OS_PASSWORD: "{{ keystone_admin_pass }}"
+    OS_PROJECT_NAME: "{{ keystone_admin_project_name }}"
+    OS_USER_DOMAIN_NAME: "{{ keystone_admin_user_domain_name }}"
+    OS_PROJECT_DOMAIN_NAME: "{{ keystone_admin_project_domain_name }}"
+    OS_AUTH_URL: "{{ keystone_auth_url }}"
+    OS_IDENTITY_API_VERSION: "{{ keystone_identity_api_version }}"
