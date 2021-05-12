@@ -1,0 +1,9 @@
+{% for endpoint_interface in keystone_endpoint_interfaces %}
+resource "openstack_identity_endpoint_v3" "glance_endpoint_{{ endpoint_interface }}" {
+  interface = "{{ endpoint_interface }}"
+  url = "{{ keystone_glance_endpoint_url }}"
+  endpoint_region = openstack_identity_service_v3.{{ keystone_glance_service }}.region
+  service_id = openstack_identity_service_v3.{{ keystone_glance_service }}.id
+  name = "glance_{{ endpoint_interface }}"
+}
+{% endfor %}

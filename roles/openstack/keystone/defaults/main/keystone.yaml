@@ -34,8 +34,23 @@ keystone_region: RegionOne
 keystone_identity_api_version: 3
 
 terraform_dir: /opt/terraform
+terraform_user: "{{ ansible_user }}"
+terraform_group: "{{ ansible_user }}"
 
 keystone_demo_project_name: myproject
 keystone_demo_project_desc: "Demo Project"
 keystone_demo_project_domain: default
 keystone_demo_project_user: myuser
+keystone_demo_project_role: myrole
+
+keystone_glance_user: glance
+keystone_glance_pass: password123
+keystone_glance_service: glance
+keystone_glance_service_desc: "OpenStack Image"
+keystone_glance_service_type: image
+keystone_glance_endpoint_url: "controller:9292"
+
+keystone_endpoint_interfaces:
+- public
+- internal
+- admin

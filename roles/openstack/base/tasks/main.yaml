@@ -1,4 +1,10 @@
 ---
+- name: Disable SELinux since not all tasks work with it
+  selinux:
+    state: permissive
+    policy: targeted
+  when: ansible_os_family == "RedHat"
+
 - name: Build /etc/hosts file
   blockinfile:
     create: true

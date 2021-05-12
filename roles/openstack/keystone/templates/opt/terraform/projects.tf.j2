@@ -1,16 +1,3 @@
-terraform {
-  required_version = ">= 0.14.0"
-  required_providers {
-    openstack = {
-      source = "terraform-provider-openstack/openstack"
-    }
-  }
-}
-
-# Configure the OpenStack Provider
-provider "openstack" {
-}
-
 data "openstack_identity_project_v3" "{{ keystone_init_project }}" {
   is_domain = true
   name = "{{ keystone_init_project }}"
@@ -33,10 +20,7 @@ resource "openstack_identity_project_v3" "{{ keystone_demo_project_name }}" {
   domain_id   = data.openstack_identity_project_v3.{{ keystone_init_project }}.id
 }
 
-resource "openstack_identity_user_v3" "{{ keystone_demo_project_user }}" {
-  default_project_id = openstack_identity_project_v3.{{ keystone_demo_project_name }}.id
-  name               = "{{ keystone_demo_project_user }}"
-  password = "password123"
-  ignore_change_password_upon_first_use = true
-  domain_id   = data.openstack_identity_project_v3.{{ keystone_init_project }}.id
+resource "openstack_identity_project_v3" "service" {
+  name        = "service"
+  description = "service project"
 }

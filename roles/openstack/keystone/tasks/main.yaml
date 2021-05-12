@@ -37,10 +37,6 @@
     dest: /etc/keystone/keystone.conf
     backup: true
 
-- name: print {{ keystone_db_dir.stat.blocks }}
-  debug:
-    var: keystone_db_dir
-
 - name: Init Database and Fernet Setup
   block:
   - name: Populate the Identity service database
@@ -92,19 +88,33 @@
   file:
     path: "{{ terraform_dir }}"
     state: directory
+    owner: "{{ terraform_user }}"
+    group: "{{ terraform_group }}"
+    recurse: true
 
-- name: Terraform Definition Files
+    #- name: Terraform Files
+    #  template:
+    #    src: opt/terraform/keystone.tf.j2
+    #    dest: "{{ terraform_dir }}/keystone.tf"
+    #    owner: "{{ terraform_user }}"
+    #    group: "{{ terraform_group }}"
+
+- name: Terraform Files
   template:
-    src: opt/terraform/main.tf.j2
-    dest: "{{ terraform_dir }}/main.tf"
+    src: '{{ item.src }}'
+    dest: "{{ terraform_dir }}/{{ item.path | regex_replace('\\.j2$', '') }}"
+    owner: "{{ terraform_user }}"
+    group: "{{ terraform_group }}"
+  with_filetree: '{{ role_path }}/templates/opt/terraform'
+  when: item.state == 'file'
 
-
-- name: Create Project {{ keystone_init_project }}
+- name: Run Terraform
   terraform:
     project_path: "{{ terraform_dir }}"
     state: present
     binary_path: /usr/local/bin/terraform
     force_init: true
+  become: false
   environment:
     OS_USERNAME: "{{ keystone_admin_user }}"
     OS_PASSWORD: "{{ keystone_admin_pass }}"

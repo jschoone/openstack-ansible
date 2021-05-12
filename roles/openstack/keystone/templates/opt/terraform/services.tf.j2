@@ -1,0 +1,6 @@
+resource "openstack_identity_service_v3" "{{ keystone_glance_service }}" {
+  name = "{{ keystone_glance_service }}"
+  description = "{{ keystone_glance_service_desc }}"
+  type = "{{ keystone_glance_service_type }}"
+  region = "{{ keystone_region }}"
+}
