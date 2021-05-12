@@ -1,11 +1,14 @@
 controller01 ansible_host=192.168.51.10
-compute01 ansible_host=192.168.51.11
+#compute01 ansible_host=192.168.51.11
 
 [controller]
 controller01
 
-[compute]
-compute01
+[compute:children]
+controller
 
-[identity]
-controller01
+[identity:children]
+controller
+
+[glance:children]
+controller
