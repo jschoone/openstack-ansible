@@ -1,8 +1,9 @@
 #!/bin/sh
-export OS_USERNAME="{{ keystone_admin_user }}"
-export OS_PASSWORD="{{ keystone_admin_pass }}"
-export OS_PROJECT_NAME="{{ keystone_admin_project_name }}"
-export OS_USER_DOMAIN_NAME="{{ keystone_admin_user_domain_name }}"
-export OS_PROJECT_DOMAIN_NAME="{{ keystone_admin_project_domain_name }}"
-export OS_AUTH_URL="{{ keystone_auth_url }}"
-export OS_IDENTITY_API_VERSION="{{ keystone_identity_api_version }}"
+export OS_USERNAME={{ keystone_admin_user }}
+export OS_PASSWORD={{ keystone_admin_pass }}
+export OS_PROJECT_NAME={{ keystone_admin_project_name }}
+export OS_USER_DOMAIN_NAME={{ keystone_admin_user_domain_name }}
+export OS_PROJECT_DOMAIN_NAME={{ keystone_admin_project_domain_name }}
+export OS_AUTH_URL={{ keystone_auth_url }}
+export OS_IDENTITY_API_VERSION={{ keystone_identity_api_version }}
+export OS_IMAGE_API_VERSION={{ keystone_image_api_version }}

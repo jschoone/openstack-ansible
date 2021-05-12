@@ -32,6 +32,7 @@ keystone_admin_user_domain_name: Default
 keystone_admin_project_domain_name: Default
 keystone_region: RegionOne
 keystone_identity_api_version: 3
+keystone_image_api_version: 2
 
 terraform_dir: /opt/terraform
 terraform_user: "{{ ansible_user }}"

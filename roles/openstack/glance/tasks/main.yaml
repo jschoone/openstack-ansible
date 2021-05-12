@@ -75,3 +75,4 @@
     OS_PROJECT_DOMAIN_NAME: "{{ keystone_admin_project_domain_name }}"
     OS_AUTH_URL: "{{ keystone_auth_url }}"
     OS_IDENTITY_API_VERSION: "{{ keystone_identity_api_version }}"
+    OS_IMAGE_API_VERSION: "{{ keystone_image_api_version }}"
