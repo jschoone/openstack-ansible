@@ -1,0 +1,23 @@
+---
+keystone_api_url: http://controller:5000
+memcached_servers_url: controller:11211
+database_user: root
+database_pass: overrideme
+database_host: "{{ ansible_facts[management_interface]['ipv4']['address'] }}"
+database_dir: /var/lib/mysql
+database_socket: "{{ _database_socket[ansible_os_family] }}"
+_database_socket:
+  Debian: /var/run/mysqld/mysqld.sock
+  RedHat: /var/lib/mysql/mysql.sock
+glance_user: glance
+glance_pass: password123
+glance_group: glance
+glance_database: glance
+glance_database_user: glance
+glance_database_pass: GLANCE_DBPASS
+glance_database_privs: '*.*:ALL'
+glance_database_provider: fernet
+glance_packages:
+- openstack-glance
+- httpd
+- python3-mod_wsgi

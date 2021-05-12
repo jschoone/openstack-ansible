@@ -1,0 +1,52 @@
+---
+- name: Create database {{ glance_database }}
+  mysql_db:
+    name: "{{ glance_database }}"
+    login_user: "{{ database_user }}"
+    login_password: "{{ database_pass }}"
+    login_unix_socket: "{{ database_socket }}"
+    state: present
+
+- name: Grant User {{ glance_database_user }} All Privileges on {{ glance_database }}
+  mysql_user:
+    name: "{{ glance_database_user }}"
+    password: "{{ glance_database_pass }}"
+    priv: "{{ glance_database_privs }}"
+    host: "{{ item }}"
+    login_user: "{{ database_user }}"
+    login_password: "{{ database_pass }}"
+    login_unix_socket: "{{ database_socket }}"
+  with_items:
+  - localhost
+  - '%'
+  - "{{ database_host }}"
+
+- name: Get Database Dir Informations
+  stat:
+    path: "{{ database_dir }}/{{ glance_database }}"
+  register: glance_db_dir
+
+- name: Install components
+  package:
+    name: "{{ glance_packages }}"
+    state: present
+
+- name: Configure Glance
+  template:
+    src: etc/glance/glance-api.conf.j2
+    dest: /etc/glance/glance-api.conf
+    backup: true
+  notify:
+  - restart glance-api
+
+- name: Populate the Identity service database
+  command: glance-manage db_sync
+  become_user: "{{ glance_user }}"
+  become: true
+  when: glance_db_dir.stat.blocks == 0
+
+- name: Enable Glance API-Service
+  service:
+    name: openstack-glance-api
+    state: started
+    enabled: true

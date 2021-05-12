@@ -1,0 +1,6 @@
+---
+- name: Install Glance
+  hosts: glance
+  become: true
+  roles:
+  - { role: openstack/glance, tags: ["glance"] }
