@@ -79,9 +79,9 @@
 - name: Create adminrc file
   template:
     src: root/adminrc.j2
-    dest: ~ansible/adminrc
-    owner: ansible
-    group: ansible
+    dest: "~{{ ansible_user }}/adminrc"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
     mode: '0755'
 
 - name: Make sure {{ terraform_dir }} exists
