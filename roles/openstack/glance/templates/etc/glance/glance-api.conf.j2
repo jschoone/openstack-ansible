@@ -1,8 +1,8 @@
 [database]
 connection = mysql+pymysql://{{ glance_database_user }}:{{ glance_database_pass }}@controller/{{ glance_database }}
 [keystone_authtoken]
-www_authenticate_uri  = http://{{ keystone_api_url }}
-auth_url = http://{{ keystone_api_url }}
+www_authenticate_uri  = {{ keystone_api_url }}
+auth_url = {{ keystone_api_url }}
 memcached_servers = {{ memcached_servers_url }}
 auth_type = password
 project_domain_name = Default

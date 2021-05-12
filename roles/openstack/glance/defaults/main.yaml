@@ -21,3 +21,16 @@ glance_packages:
 - openstack-glance
 - httpd
 - python3-mod_wsgi
+
+keystone_auth_url: 'http://controller:5000/v3'
+keystone_admin_pass: ADMIN_PASS
+keystone_admin_user: admin
+keystone_admin_project_name: admin
+keystone_admin_user_domain_name: Default
+keystone_admin_project_domain_name: Default
+keystone_region: RegionOne
+keystone_identity_api_version: 3
+
+terraform_dir: /opt/terraform
+terraform_user: "{{ ansible_user }}"
+terraform_group: "{{ ansible_user }}"

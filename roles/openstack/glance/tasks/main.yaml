@@ -39,7 +39,7 @@
   notify:
   - restart glance-api
 
-- name: Populate the Identity service database
+- name: Populate the Glance service database
   command: glance-manage db_sync
   become_user: "{{ glance_user }}"
   become: true
@@ -50,3 +50,28 @@
     name: openstack-glance-api
     state: started
     enabled: true
+
+- name: Terraform Files
+  template:
+    src: '{{ item.src }}'
+    dest: "{{ terraform_dir }}/{{ item.path | regex_replace('\\.j2$', '') }}"
+    owner: "{{ terraform_user }}"
+    group: "{{ terraform_group }}"
+  with_filetree: '{{ role_path }}/templates/opt/terraform'
+  when: item.state == 'file'
+
+- name: Run Terraform
+  terraform:
+    project_path: "{{ terraform_dir }}"
+    state: present
+    binary_path: /usr/local/bin/terraform
+    force_init: true
+  become: false
+  environment:
+    OS_USERNAME: "{{ keystone_admin_user }}"
+    OS_PASSWORD: "{{ keystone_admin_pass }}"
+    OS_PROJECT_NAME: "{{ keystone_admin_project_name }}"
+    OS_USER_DOMAIN_NAME: "{{ keystone_admin_user_domain_name }}"
+    OS_PROJECT_DOMAIN_NAME: "{{ keystone_admin_project_domain_name }}"
+    OS_AUTH_URL: "{{ keystone_auth_url }}"
+    OS_IDENTITY_API_VERSION: "{{ keystone_identity_api_version }}"
