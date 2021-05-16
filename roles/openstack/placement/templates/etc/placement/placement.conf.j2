@@ -1,0 +1,15 @@
+[placement_database]
+connection = mysql+pymysql://{{ placement_database_user }}:{{ placement_database_pass }}@controller/{{ placement_database }}
+
+[api]
+auth_strategy = keystone
+
+[keystone_authtoken]
+auth_url = {{ keystone_api_url }}
+memcached_servers = {{ memcached_servers_url }}
+auth_type = password
+project_domain_name = Default
+user_domain_name = Default
+project_name = service
+username = {{ placement_user }}
+password = {{ placement_pass }}

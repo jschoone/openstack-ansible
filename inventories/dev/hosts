@@ -12,3 +12,6 @@ controller
 
 [glance:children]
 controller
+
+[placement:children]
+controller

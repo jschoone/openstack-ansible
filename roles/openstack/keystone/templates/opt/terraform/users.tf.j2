@@ -2,7 +2,6 @@ data "openstack_identity_role_v3" "{{ keystone_admin_user }}" {
   name = "{{ keystone_admin_user }}"
 }
 
-
 resource "openstack_identity_user_v3" "{{ keystone_demo_project_user }}" {
   default_project_id = openstack_identity_project_v3.{{ keystone_demo_project_name }}.id
   name               = "{{ keystone_demo_project_user }}"
@@ -19,6 +18,14 @@ resource "openstack_identity_user_v3" "{{ keystone_glance_user }}" {
   domain_id   = data.openstack_identity_project_v3.{{ keystone_init_project }}.id
 }
 
+resource "openstack_identity_user_v3" "{{ keystone_placement_user }}" {
+  default_project_id = openstack_identity_project_v3.{{ keystone_demo_project_name }}.id
+  name               = "{{ keystone_placement_user }}"
+  password = "{{ keystone_placement_pass }}"
+  ignore_change_password_upon_first_use = true
+  domain_id   = data.openstack_identity_project_v3.{{ keystone_init_project }}.id
+}
+
 resource "openstack_identity_role_v3" "{{ keystone_demo_project_role }}" {
   name               = "{{ keystone_demo_project_role }}"
 }
@@ -31,6 +38,12 @@ resource "openstack_identity_role_assignment_v3" "role_assignment_{{ keystone_de
 
 resource "openstack_identity_role_assignment_v3" "role_assignment_{{ keystone_glance_user }}" {
   user_id    = openstack_identity_user_v3.{{ keystone_glance_user }}.id
+  project_id = openstack_identity_project_v3.service.id
+  role_id    = data.openstack_identity_role_v3.{{ keystone_admin_user }}.id
+}
+
+resource "openstack_identity_role_assignment_v3" "role_assignment_{{ keystone_placement_user }}" {
+  user_id    = openstack_identity_user_v3.{{ keystone_placement_user }}.id
   project_id = openstack_identity_project_v3.service.id
   role_id    = data.openstack_identity_role_v3.{{ keystone_admin_user }}.id
 }

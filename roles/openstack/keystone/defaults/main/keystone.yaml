@@ -51,6 +51,13 @@ keystone_glance_service_desc: "OpenStack Image"
 keystone_glance_service_type: image
 keystone_glance_endpoint_url: "controller:9292"
 
+keystone_placement_user: placement
+keystone_placement_pass: password123
+keystone_placement_service: placement
+keystone_placement_service_desc: "OpenStack Placement"
+keystone_placement_service_type: placement
+keystone_placement_endpoint_url: "controller:8778"
+
 keystone_endpoint_interfaces:
 - public
 - internal

@@ -7,3 +7,13 @@ resource "openstack_identity_endpoint_v3" "glance_endpoint_{{ endpoint_interface
   name = "glance_{{ endpoint_interface }}"
 }
 {% endfor %}
+
+{% for endpoint_interface in keystone_endpoint_interfaces %}
+resource "openstack_identity_endpoint_v3" "placement_endpoint_{{ endpoint_interface }}" {
+  interface = "{{ endpoint_interface }}"
+  url = "http://{{ keystone_placement_endpoint_url }}"
+  endpoint_region = openstack_identity_service_v3.{{ keystone_placement_service }}.region
+  service_id = openstack_identity_service_v3.{{ keystone_placement_service }}.id
+  name = "placement_{{ endpoint_interface }}"
+}
+{% endfor %}

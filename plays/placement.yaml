@@ -1,0 +1,6 @@
+---
+- name: Install Placement
+  hosts: placement
+  become: true
+  roles:
+  - { role: openstack/placement, tags: ["placement"] }

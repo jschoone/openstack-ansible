@@ -1,0 +1,46 @@
+---
+- name: Create database {{ placement_database }}
+  mysql_db:
+    name: "{{ placement_database }}"
+    login_user: "{{ database_user }}"
+    login_password: "{{ database_pass }}"
+    login_unix_socket: "{{ database_socket }}"
+    state: present
+
+- name: Grant User {{ placement_database_user }} All Privileges on {{ placement_database }}
+  mysql_user:
+    name: "{{ placement_database_user }}"
+    password: "{{ placement_database_pass }}"
+    priv: "{{ placement_database_privs }}"
+    host: "{{ item }}"
+    login_user: "{{ database_user }}"
+    login_password: "{{ database_pass }}"
+    login_unix_socket: "{{ database_socket }}"
+  with_items:
+  - localhost
+  - '%'
+  - "{{ database_host }}"
+
+- name: Get Database Dir Informations
+  stat:
+    path: "{{ database_dir }}/{{ placement_database }}"
+  register: placement_db_dir
+
+- name: Install components
+  package:
+    name: "{{ placement_packages }}"
+    state: present
+
+- name: Configure Placement
+  template:
+    src: etc/placement/placement.conf.j2
+    dest: /etc/placement/placement.conf
+    backup: true
+  notify:
+  - restart httpd
+
+- name: Populate the Placement service database
+  command: placement-manage db sync
+  become_user: "{{ placement_user }}"
+  become: true
+  when: placement_db_dir.stat.blocks == 0

@@ -1,7 +1,7 @@
 Vagrant.configure("2") do |config|
   config.vm.provision "file", source: "~/.ssh/id_ed25519.pub", destination: "~vagrant/.ssh/me.pub"
   config.vm.provision "shell", inline: "cat ~vagrant/.ssh/me.pub >> ~vagrant/.ssh/authorized_keys"
-  config.vm.provision "shell", inline: "swapoff -a"
+
   config.vm.provision "ansible" do |ansible|
     ansible.playbook = "plays/site.yaml"
     ansible.inventory_path = "inventories/dev"
@@ -13,7 +13,6 @@ Vagrant.configure("2") do |config|
 
   [
     ["controller", "#{net_ip}.10", "2048", "centos/8"],
-    ["compute", "#{net_ip}.11", "2048", "centos/8"],
   ].each do |vmname,ip,mem,os|
     config.vm.define "#{vmname}" do |vm_config|
       vm_config.vm.provider "virtualbox" do |vb|

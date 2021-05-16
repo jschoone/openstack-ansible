@@ -4,3 +4,10 @@ resource "openstack_identity_service_v3" "{{ keystone_glance_service }}" {
   type = "{{ keystone_glance_service_type }}"
   region = "{{ keystone_region }}"
 }
+
+resource "openstack_identity_service_v3" "{{ keystone_placement_service }}" {
+  name = "{{ keystone_placement_service }}"
+  description = "{{ keystone_placement_service_desc }}"
+  type = "{{ keystone_placement_service_type }}"
+  region = "{{ keystone_region }}"
+}
