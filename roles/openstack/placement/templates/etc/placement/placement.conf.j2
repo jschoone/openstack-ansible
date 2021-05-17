@@ -1,5 +1,5 @@
 [placement_database]
-connection = mysql+pymysql://{{ placement_database_user }}:{{ placement_database_pass }}@controller/{{ placement_database }}
+connection = mysql+pymysql://{{ placement_database_user }}:{{ placement_database_pass }}@{{ controller_hostname }}/{{ placement_database }}
 
 [api]
 auth_strategy = keystone

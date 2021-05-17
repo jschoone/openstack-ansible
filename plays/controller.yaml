@@ -4,8 +4,6 @@
   become: true
   vars:
     proxy_url: ""
-    #  environment:
-    #    http_proxy: "{{ proxy_url }}"
-    #    https_proxy: "{{ proxy_url }}"
+  environment: "{{ proxy_env }}"
   roles:
   - { role: openstack/controller, tags: ["controller"] }

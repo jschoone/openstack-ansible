@@ -1,0 +1,48 @@
+---
+- name: Create database {{ item }}
+  mysql_db:
+    name: "{{ item }}"
+    login_user: "{{ database_user }}"
+    login_password: "{{ database_pass }}"
+    login_unix_socket: "{{ database_socket }}"
+    state: present
+  with_items:
+  - "{{ nova_database }}"
+
+- name: Grant User {{ nova_database_user }} All Privileges on {{ nova_database }}
+  mysql_user:
+    name: "{{ nova_database_user }}"
+    password: "{{ nova_database_pass }}"
+    host: "{{ item }}"
+    priv: "*.*:ALL"
+    login_user: "{{ database_user }}"
+    login_password: "{{ database_pass }}"
+    login_unix_socket: "{{ database_socket }}"
+  with_items:
+  - "localhost"
+  - '%'
+  - "{{ database_host }}"
+
+- name: Get Database Dir Informations
+  stat:
+    path: "{{ database_dir }}/{{ nova_database[0] }}"
+  register: nova_db_dir
+
+- name: Install components
+  package:
+    name: "{{ nova_packages }}"
+    state: present
+
+    #- name: Configure Nova
+    #  template:
+    #    src: etc/nova/nova.conf.j2
+    #    dest: /etc/nova/nova.conf
+    #    backup: true
+    #  notify:
+    #  - restart httpd
+    #
+    #- name: Populate the Nova service database
+    #  command: nova-manage db sync
+    #  become_user: "{{ nova_user }}"
+    #  become: true
+    #  when: nova_db_dir.stat.blocks == 0

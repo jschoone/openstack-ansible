@@ -112,7 +112,7 @@
   lineinfile:
     path: "{{ memcached_config_path }}"
     regex: '^OPTIONS='
-    line: 'OPTIONS="-l 127.0.0.1,::1,controller"'
+    line: 'OPTIONS="-l 127.0.0.1,::1,{{ controller_hostname }}"'
   notify:
   - restart memcached
 

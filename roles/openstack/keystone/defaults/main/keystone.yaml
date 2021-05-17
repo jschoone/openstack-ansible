@@ -1,7 +1,8 @@
 ---
+controller_hostname: "{{ groups['controller'][0] }}"
 database_user: root
 database_pass: overrideme
-database_host: "{{ ansible_facts[management_interface]['ipv4']['address'] }}"
+database_host: "{{ hostvars[groups['controller'][0]]['ansible_facts'][management_interface]['ipv4']['address'] }}"
 database_dir: /var/lib/mysql
 database_socket: "{{ _database_socket[ansible_os_family] }}"
 _database_socket:
@@ -24,7 +25,7 @@ keystone_init_project_desc: "Service Project"
 keystone_init_domain: example
 keystone_init_domain_desc: "Example Demo"
 
-keystone_auth_url: 'http://controller:5000/v3'
+keystone_auth_url: "http://{{ controller_hostname }}:5000/v3"
 keystone_admin_pass: ADMIN_PASS
 keystone_admin_user: admin
 keystone_admin_project_name: admin
@@ -49,14 +50,14 @@ keystone_glance_pass: password123
 keystone_glance_service: glance
 keystone_glance_service_desc: "OpenStack Image"
 keystone_glance_service_type: image
-keystone_glance_endpoint_url: "controller:9292"
+keystone_glance_endpoint_url: "{{ controller_hostname }}:9292"
 
 keystone_placement_user: placement
 keystone_placement_pass: password123
 keystone_placement_service: placement
 keystone_placement_service_desc: "OpenStack Placement"
 keystone_placement_service_type: placement
-keystone_placement_endpoint_url: "controller:8778"
+keystone_placement_endpoint_url: "{{ controller_hostname }}:8778"
 
 keystone_endpoint_interfaces:
 - public

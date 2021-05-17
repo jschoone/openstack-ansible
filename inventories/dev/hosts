@@ -15,3 +15,6 @@ controller
 
 [placement:children]
 controller
+
+[nova:children]
+controller

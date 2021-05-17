@@ -1,0 +1,7 @@
+---
+- name: Install Nova
+  hosts: nova
+  become: true
+  environment: "{{ proxy_env }}"
+  roles:
+  - { role: openstack/nova, tags: ["nova"] }

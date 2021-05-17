@@ -1,0 +1,20 @@
+[DEFAULT]
+enabled_apis = osapi_compute,metadata
+transport_url = rabbit://{{ mq_user }}:{{ mq_pass }}@{{ controller_hostname }}:{{ mq_port }}/
+
+[api_database]
+connection = mysql+pymysql://{{ nova_database_user }}:{{ nova_database_pass }}@{{ controller_hostname }}/{{ nova_database }}
+
+[api]
+auth_strategy = keystone
+
+[keystone_authtoken]
+www_authenticate_uri = {{ keystone_api_url }}
+auth_url = {{ keystone_api_url }}
+memcached_servers = {{ memcached_servers_url }}
+auth_type = password
+project_domain_name = Default
+user_domain_name = Default
+project_name = service
+username = {{ nova_user }}
+password = {{ nova_pass }}

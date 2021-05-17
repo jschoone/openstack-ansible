@@ -4,3 +4,4 @@
 - import_playbook: keystone.yaml
 - import_playbook: glance.yaml
 - import_playbook: placement.yaml
+- import_playbook: nova.yaml

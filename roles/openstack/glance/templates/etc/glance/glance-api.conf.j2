@@ -1,5 +1,5 @@
 [database]
-connection = mysql+pymysql://{{ glance_database_user }}:{{ glance_database_pass }}@controller/{{ glance_database }}
+connection = mysql+pymysql://{{ glance_database_user }}:{{ glance_database_pass }}@{{ controller_hostname }}/{{ glance_database }}
 [keystone_authtoken]
 www_authenticate_uri  = {{ keystone_api_url }}
 auth_url = {{ keystone_api_url }}

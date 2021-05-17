@@ -10,18 +10,20 @@ database_socket: "{{ _database_socket[ansible_os_family] }}"
 _database_socket:
   Debian: /var/run/mysqld/mysqld.sock
   RedHat: /var/lib/mysql/mysql.sock
-glance_user: glance
-glance_pass: password123
-glance_group: glance
-glance_database: glance
-glance_database_user: glance
-glance_database_pass: GLANCE_DBPASS
-glance_database_privs: '*.*:ALL'
-glance_database_provider: fernet
-glance_packages:
-- openstack-glance
-- httpd
-- python3-mod_wsgi
+nova_user: nova
+nova_pass: password123
+nova_group: nova
+nova_database: nova
+nova_database_api: nova_api
+nova_database_cell0: nova_cell0
+nova_database_user: nova
+nova_database_pass: NOVA_DBPASS
+nova_database_provider: fernet
+nova_packages:
+- openstack-nova-api
+- openstack-nova-conductor
+- openstack-nova-novncproxy
+- openstack-nova-scheduler
 
 keystone_auth_url: "http://{{ controller_hostname }}:5000/v3"
 keystone_admin_pass: ADMIN_PASS
@@ -36,3 +38,9 @@ keystone_image_api_version: 2
 terraform_dir: /opt/terraform
 terraform_user: "{{ ansible_user }}"
 terraform_group: "{{ ansible_user }}"
+
+mq_name: RabbitMQ
+mq_service: rabbitmq-server
+mq_user: openstack
+mq_pass: RABBIT_PASS
+mq_port: 5672

@@ -4,7 +4,7 @@ Include conf.modules.d/*.conf
 User apache
 Group apache
 ServerAdmin root@localhost
-ServerName controller
+ServerName {{ controller_hostname }}
 <Directory />
     AllowOverride none
     Require all denied

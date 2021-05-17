@@ -1,9 +1,10 @@
 ---
-keystone_api_url: http://controller:5000
-memcached_servers_url: controller:11211
+controller_hostname: "{{ groups['controller'][0] }}"
+keystone_api_url: http://{{ controller_hostname }}:5000
+memcached_servers_url: "{{ controller_hostname }}:11211"
 database_user: root
 database_pass: overrideme
-database_host: "{{ ansible_facts[management_interface]['ipv4']['address'] }}"
+database_host: "{{ hostvars[groups['controller'][0]]['ansible_facts'][management_interface]['ipv4']['address'] }}"
 database_dir: /var/lib/mysql
 database_socket: "{{ _database_socket[ansible_os_family] }}"
 _database_socket:
@@ -20,7 +21,7 @@ placement_database_provider: fernet
 placement_packages:
 - openstack-placement-api
 
-keystone_auth_url: 'http://controller:5000/v3'
+keystone_auth_url: 'http://{{ controller_hostname }}:5000/v3'
 keystone_admin_pass: ADMIN_PASS
 keystone_admin_user: admin
 keystone_admin_project_name: admin

@@ -2,44 +2,12 @@
 - name: debug playbook
   hosts: controller
   tasks:
-  - name: Generate an OpenSSL private key
-    community.crypto.openssl_privatekey:
-      path: /var/tmp/openstack.key
-      type: Ed25519
-      return_content: true
-    register: openstack_key
-
-  - name: Print key
-    debug: var=openstack_key.privatekey
-
-  - name: Generate an OpenSSL Certificate Signing Request
-    community.crypto.openssl_csr:
-      path: /var/tmp/openstack.csr
-      privatekey_path: /var/tmp/openstack.key
-      common_name: openstack
-      return_content: true
-    register: openstack_csr
-
-  - name: Print csr
-    debug: var=openstack_csr.csr
-
-  - name: Generate a Self Signed OpenSSL certificate
-    openssl_certificate:
-      path: /var/tmp/openstack.crt
-      privatekey_path: /var/tmp/openstack.key
-      csr_path: /var/tmp/openstack.csr
-      provider: selfsigned
-      return_content: true
-    register: openstack_crt
-
-  - name: Print crt
-    debug: var=openstack_crt.certificate
-
-  - name: Concat certificate
-    blockinfile:
-      path: /var/tmp/haproxy.crt
-      create: true
-      block: |
-        {{ openstack_crt.certificate }}
-        {{ openstack_csr.csr }}
-        {{ openstack_key.privatekey }}
+  - name: print first controller host
+    debug:
+      var: hostvars[groups['controller'][0]]
+  - name: print first controller host name
+    debug:
+      var: groups['controller'][0]
+  - name: print first controller host name
+    debug:
+      msg: Moin {{ groups['controller'][0] }}
