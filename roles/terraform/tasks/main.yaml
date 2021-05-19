@@ -1,0 +1,41 @@
+---
+- name: Install terraform
+  unarchive:
+    src: "{{ terraform_url }}"
+    dest: /usr/local/bin
+    remote_src: yes
+
+- name: Make sure {{ terraform_dir }} exists
+  file:
+    path: "{{ terraform_dir }}"
+    state: directory
+    owner: "{{ terraform_user }}"
+    group: "{{ terraform_group }}"
+    recurse: true
+
+- name: Terraform Files
+  template:
+    src: '{{ item.src }}'
+    dest: "{{ terraform_dir }}/{{ item.path | regex_replace('\\.j2$', '') }}"
+    owner: "{{ terraform_user }}"
+    group: "{{ terraform_group }}"
+  with_filetree: '{{ role_path }}/templates/opt/terraform'
+  when: item.state == 'file'
+
+- name: Run Terraform
+  terraform:
+    project_path: "{{ terraform_dir }}"
+    state: present
+    binary_path: /usr/local/bin/terraform
+    force_init: true
+  become: false
+  environment:
+    OS_USERNAME: "{{ admin_user }}"
+    OS_PASSWORD: "{{ admin_pass }}"
+    OS_PROJECT_NAME: "{{ admin_project_name }}"
+    OS_USER_DOMAIN_NAME: "{{ default_user_domain_name }}"
+    OS_PROJECT_DOMAIN_NAME: "{{ default_project_domain_name }}"
+    OS_AUTH_URL: "{{ keystone_auth_url }}"
+    OS_IDENTITY_API_VERSION: "{{ keystone_identity_api_version }}"
+    OS_IMAGE_API_VERSION: "{{ keystone_image_api_version }}"
+  when: run_terraform == true

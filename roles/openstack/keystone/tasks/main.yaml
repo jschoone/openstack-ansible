@@ -49,7 +49,7 @@
     command: keystone-manage credential_setup --keystone-user {{ keystone_user }} --keystone-group {{ keystone_group }}
   - name: Bootstrap Identity Service
     shell: |
-        keystone-manage bootstrap --bootstrap-password {{ keystone_admin_pass }} \
+        keystone-manage bootstrap --bootstrap-password {{ admin_pass }} \
         --bootstrap-admin-url http://{{ controller_hostname }}:5000/v3/ \
         --bootstrap-internal-url http://{{ controller_hostname }}:5000/v3/ \
         --bootstrap-public-url http://{{ controller_hostname }}:5000/v3/ \
@@ -83,44 +83,3 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: '0755'
-
-- name: Make sure {{ terraform_dir }} exists
-  file:
-    path: "{{ terraform_dir }}"
-    state: directory
-    owner: "{{ terraform_user }}"
-    group: "{{ terraform_group }}"
-    recurse: true
-
-    #- name: Terraform Files
-    #  template:
-    #    src: opt/terraform/keystone.tf.j2
-    #    dest: "{{ terraform_dir }}/keystone.tf"
-    #    owner: "{{ terraform_user }}"
-    #    group: "{{ terraform_group }}"
-
-- name: Terraform Files
-  template:
-    src: '{{ item.src }}'
-    dest: "{{ terraform_dir }}/{{ item.path | regex_replace('\\.j2$', '') }}"
-    owner: "{{ terraform_user }}"
-    group: "{{ terraform_group }}"
-  with_filetree: '{{ role_path }}/templates/opt/terraform'
-  when: item.state == 'file'
-
-  #- name: Run Terraform
-  #  terraform:
-  #    project_path: "{{ terraform_dir }}"
-  #    state: present
-  #    binary_path: /usr/local/bin/terraform
-  #    force_init: true
-  #  become: false
-  #  environment:
-  #    OS_USERNAME: "{{ keystone_admin_user }}"
-  #    OS_PASSWORD: "{{ keystone_admin_pass }}"
-  #    OS_PROJECT_NAME: "{{ keystone_admin_project_name }}"
-  #    OS_USER_DOMAIN_NAME: "{{ keystone_admin_user_domain_name }}"
-  #    OS_PROJECT_DOMAIN_NAME: "{{ keystone_admin_project_domain_name }}"
-  #    OS_AUTH_URL: "{{ keystone_auth_url }}"
-  #    OS_IDENTITY_API_VERSION: "{{ keystone_identity_api_version }}"
-  #    OS_IMAGE_API_VERSION: "{{ keystone_image_api_version }}"

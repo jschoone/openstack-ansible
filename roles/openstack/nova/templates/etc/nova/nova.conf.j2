@@ -1,20 +1,46 @@
 [DEFAULT]
 enabled_apis = osapi_compute,metadata
 transport_url = rabbit://{{ mq_user }}:{{ mq_pass }}@{{ controller_hostname }}:{{ mq_port }}/
+my_ip = {{ ansible_facts[management_interface]['ipv4']['address'] }}
 
 [api_database]
 connection = mysql+pymysql://{{ nova_database_user }}:{{ nova_database_pass }}@{{ controller_hostname }}/{{ nova_database }}
 
 [api]
-auth_strategy = keystone
+auth_strategy = {{ api_auth_strategy }}
 
 [keystone_authtoken]
 www_authenticate_uri = {{ keystone_api_url }}
 auth_url = {{ keystone_api_url }}
 memcached_servers = {{ memcached_servers_url }}
-auth_type = password
-project_domain_name = Default
-user_domain_name = Default
-project_name = service
+auth_type = {{ keystone_auth_type }}
+project_domain_name = {{ default_user_domain_name }}
+user_domain_name = {{ default_project_domain_name }}
+project_name = {{ keystone_project_name }}
 username = {{ nova_user }}
 password = {{ nova_pass }}
+
+[vnc]
+enabled = {{ vnc_enabled }}
+server_listen = {{ vnc_server_listen }}
+server_proxyclient_address = {{ vnc_server_proxyclient_address }}
+novncproxy_base_url = {{ vnc_novncproxy_base_url }}
+
+[glance]
+api_servers = {{ glance_api_servers }}
+
+[oslo_concurrency]
+lock_path = {{ oslo_concurrency_lock_path }}
+
+[placement]
+region_name = {{ default_region }}
+project_domain_name = {{ default_user_domain_name }}
+project_name = {{ keystone_project_name }}
+auth_type = {{ keystone_auth_type }}
+user_domain_name = {{ default_user_domain_name }}
+auth_url = {{ keystone_auth_url }}
+username = {{ placement_user }}
+password = {{ placement_pass }}
+
+[libvirt]
+virt_type = {{ libvirt_virt_type }}

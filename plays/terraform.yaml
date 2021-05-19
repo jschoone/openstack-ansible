@@ -1,0 +1,7 @@
+---
+- name: Run Terraform
+  hosts: terraform
+  become: true
+  #environment: "{{ proxy_env }}"
+  roles:
+  - { role: openstack/terraform, tags: ["terraform"] }

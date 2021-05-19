@@ -2,10 +2,10 @@ Vagrant.configure("2") do |config|
   config.vm.provision "file", source: "~/.ssh/id_ed25519.pub", destination: "~vagrant/.ssh/me.pub"
   config.vm.provision "shell", inline: "cat ~vagrant/.ssh/me.pub >> ~vagrant/.ssh/authorized_keys"
 
-  config.vm.provision "ansible" do |ansible|
-    ansible.playbook = "plays/site.yaml"
-    ansible.inventory_path = "inventories/dev"
-  end
+#  config.vm.provision "ansible" do |ansible|
+#    ansible.playbook = "plays/site.yaml"
+#    ansible.inventory_path = "inventories/dev"
+#  end
 
   ENV['VAGRANT_DEFAULT_PROVIDER'] = 'libvirt'
 

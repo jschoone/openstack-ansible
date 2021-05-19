@@ -8,6 +8,8 @@
     state: present
   with_items:
   - "{{ nova_database }}"
+  - "{{ nova_database_api }}"
+  - "{{ nova_database_cell0 }}"
 
 - name: Grant User {{ nova_database_user }} All Privileges on {{ nova_database }}
   mysql_user:
@@ -25,7 +27,7 @@
 
 - name: Get Database Dir Informations
   stat:
-    path: "{{ database_dir }}/{{ nova_database[0] }}"
+    path: "{{ database_dir }}/{{ nova_database }}"
   register: nova_db_dir
 
 - name: Install components
@@ -33,16 +35,28 @@
     name: "{{ nova_packages }}"
     state: present
 
-    #- name: Configure Nova
-    #  template:
-    #    src: etc/nova/nova.conf.j2
-    #    dest: /etc/nova/nova.conf
-    #    backup: true
-    #  notify:
-    #  - restart httpd
-    #
-    #- name: Populate the Nova service database
-    #  command: nova-manage db sync
-    #  become_user: "{{ nova_user }}"
-    #  become: true
-    #  when: nova_db_dir.stat.blocks == 0
+- name: Configure Nova
+  template:
+    src: etc/nova/nova.conf.j2
+    dest: /etc/nova/nova.conf
+    backup: true
+  notify:
+  - restart openstack-nova-compute
+
+- name: enable openstack-nova-compute
+  service:
+    name: openstack-nova-compute
+    state: started
+    enabled: true
+
+- name: enable libvirtd
+  service:
+    name: libvirtd
+    enabled: true
+
+
+- name: Populate the Nova service database
+  command: nova-manage api_db sync
+  become_user: "{{ nova_user }}"
+  become: true
+  when: nova_db_dir.stat.blocks == 0
