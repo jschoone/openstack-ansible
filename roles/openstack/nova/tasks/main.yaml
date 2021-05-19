@@ -1,34 +1,36 @@
 ---
-- name: Create database {{ item }}
-  mysql_db:
-    name: "{{ item }}"
-    login_user: "{{ database_user }}"
-    login_password: "{{ database_pass }}"
-    login_unix_socket: "{{ database_socket }}"
-    state: present
-  with_items:
-  - "{{ nova_database }}"
-  - "{{ nova_database_api }}"
-  - "{{ nova_database_cell0 }}"
+- name: Create and configure Database
+  block:
+  - name: Create database {{ item }}
+    mysql_db:
+      name: "{{ item }}"
+      login_user: "{{ database_user }}"
+      login_password: "{{ database_pass }}"
+      login_unix_socket: "{{ database_socket }}"
+      state: present
+    with_items:
+    - "{{ nova_database }}"
+    - "{{ nova_database_api }}"
+    - "{{ nova_database_cell0 }}"
 
-- name: Grant User {{ nova_database_user }} All Privileges on {{ nova_database }}
-  mysql_user:
-    name: "{{ nova_database_user }}"
-    password: "{{ nova_database_pass }}"
-    host: "{{ item }}"
-    priv: "*.*:ALL"
-    login_user: "{{ database_user }}"
-    login_password: "{{ database_pass }}"
-    login_unix_socket: "{{ database_socket }}"
-  with_items:
-  - "localhost"
-  - '%'
-  - "{{ database_host }}"
-
-- name: Get Database Dir Informations
-  stat:
-    path: "{{ database_dir }}/{{ nova_database }}"
-  register: nova_db_dir
+  - name: Grant User {{ nova_database_user }} All Privileges on {{ nova_database }}
+    mysql_user:
+      name: "{{ nova_database_user }}"
+      password: "{{ nova_database_pass }}"
+      host: "{{ item }}"
+      priv: "*.*:ALL"
+      login_user: "{{ database_user }}"
+      login_password: "{{ database_pass }}"
+      login_unix_socket: "{{ database_socket }}"
+    with_items:
+    - "localhost"
+    - '%'
+    - "{{ database_host }}"
+  - name: Get Database Dir Informations
+    stat:
+      path: "{{ database_dir }}/{{ nova_database }}"
+    register: nova_db_dir
+  when: "'controller' in group_names"
 
 - name: Install components
   package:
@@ -41,19 +43,20 @@
     dest: /etc/nova/nova.conf
     backup: true
   notify:
-  - restart openstack-nova-compute
+  - restart openstack-nova
 
-- name: enable openstack-nova-compute
-  service:
-    name: openstack-nova-compute
-    state: started
-    enabled: true
-
-- name: enable libvirtd
-  service:
-    name: libvirtd
-    enabled: true
-
+- name: Enable Nova-Compute and Libvirt
+  block:
+  - name: enable openstack-nova-compute
+    service:
+      name: openstack-nova-compute
+      state: started
+      enabled: true
+  - name: enable libvirtd
+    service:
+      name: libvirtd
+      enabled: true
+  when: "'compute' in group_names"
 
 - name: Populate the Nova service database
   command: nova-manage api_db sync

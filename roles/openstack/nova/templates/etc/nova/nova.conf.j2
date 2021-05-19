@@ -4,7 +4,7 @@ transport_url = rabbit://{{ mq_user }}:{{ mq_pass }}@{{ controller_hostname }}:{
 my_ip = {{ ansible_facts[management_interface]['ipv4']['address'] }}
 
 [api_database]
-connection = mysql+pymysql://{{ nova_database_user }}:{{ nova_database_pass }}@{{ controller_hostname }}/{{ nova_database }}
+connection = mysql+pymysql://{{ nova_database_user }}:{{ nova_database_pass }}@{{ controller_hostname }}/{{ nova_database_api }}
 
 [api]
 auth_strategy = {{ api_auth_strategy }}

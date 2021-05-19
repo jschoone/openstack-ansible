@@ -5,3 +5,5 @@ terraform_url: https://releases.hashicorp.com/terraform/{{ terraform_version }}/
 terraform_dir: /opt/terraform
 terraform_user: "{{ ansible_user }}"
 terraform_group: "{{ ansible_user }}"
+terraform_apply: true
+terraform_binary_path: /usr/local/bin/terraform

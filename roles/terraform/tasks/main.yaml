@@ -1,9 +1,16 @@
 ---
+- name: check if terraform is installed
+  stat:
+    path: "{{ terraform_binary_path }}"
+  register: terraform_bin
+
 - name: Install terraform
   unarchive:
     src: "{{ terraform_url }}"
     dest: /usr/local/bin
     remote_src: yes
+  become: true
+  when: not terraform_bin.stat.exists
 
 - name: Make sure {{ terraform_dir }} exists
   file:
@@ -12,6 +19,7 @@
     owner: "{{ terraform_user }}"
     group: "{{ terraform_group }}"
     recurse: true
+  become: true
 
 - name: Terraform Files
   template:
@@ -26,7 +34,7 @@
   terraform:
     project_path: "{{ terraform_dir }}"
     state: present
-    binary_path: /usr/local/bin/terraform
+    binary_path: "{{ terraform_binary_path }}"
     force_init: true
   become: false
   environment:
@@ -37,5 +45,5 @@
     OS_PROJECT_DOMAIN_NAME: "{{ default_project_domain_name }}"
     OS_AUTH_URL: "{{ keystone_auth_url }}"
     OS_IDENTITY_API_VERSION: "{{ keystone_identity_api_version }}"
-    OS_IMAGE_API_VERSION: "{{ keystone_image_api_version }}"
-  when: run_terraform == true
+    OS_IMAGE_API_VERSION: "{{ image_api_version }}"
+  when: terraform_apply

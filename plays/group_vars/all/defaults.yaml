@@ -1,13 +1,3 @@
-base_packages:
-- network-scripts
-- vim
-- unzip
-
-chrony:
-  conf_destination:
-    Debian: /etc/chrony/chrony.conf
-    RedHat: /etc/chrony.conf
-
 controller_hostname: "{{ groups['controller'][0] }}"
 
 database_user: root
@@ -29,10 +19,6 @@ keystone_database_user: keystone
 keystone_database_pass: KEYSTONE_DBPASS
 keystone_database_privs: '*.*:ALL'
 keystone_database_provider: fernet
-keystone_packages:
-- openstack-keystone
-- httpd
-- python3-mod_wsgi
 
 keystone_init_project: default
 keystone_init_project_desc: "Service Project"
@@ -73,10 +59,6 @@ glance_database_user: glance
 glance_database_pass: GLANCE_DBPASS
 glance_database_privs: '*.*:ALL'
 glance_database_provider: fernet
-glance_packages:
-- openstack-glance
-- httpd
-- python3-mod_wsgi
 
 glance_port: 9292
 glance_api_servers: http://{{ controller_hostname }}:{{ glance_port }}
@@ -90,12 +72,6 @@ nova_database_cell0: nova_cell0
 nova_database_user: nova
 nova_database_pass: NOVA_DBPASS
 nova_database_provider: fernet
-nova_packages:
-- openstack-nova-compute
-- openstack-nova-api
-- openstack-nova-conductor
-- openstack-nova-novncproxy
-- openstack-nova-scheduler
 
 
 api_auth_strategy: keystone
@@ -119,8 +95,6 @@ placement_database_user: placement
 placement_database_pass: PLACEMENT_DBPASS
 placement_database_privs: '*.*:ALL'
 placement_database_provider: fernet
-placement_packages:
-- openstack-placement-api
 placement_service: placement
 placement_service_desc: "OpenStack Placement"
 placement_service_type: placement
@@ -128,10 +102,6 @@ placement_endpoint_url: "{{ controller_hostname }}:8778"
 
 etcd_service: etcd
 etcd_listen_address: "{{ ansible_facts[management_interface]['ipv4']['address'] }}"
-database_packages:
-- mariadb
-- mariadb-server
-- python3-PyMySQL
 
 database_root_password: overrideme
 database_name: MariaDB

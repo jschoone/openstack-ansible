@@ -2,48 +2,62 @@ data "openstack_identity_role_v3" "{{ admin_user }}" {
   name = "{{ admin_user }}"
 }
 
-resource "openstack_identity_user_v3" "{{ keystone_demo_project_user }}" {
-  default_project_id = openstack_identity_project_v3.{{ keystone_demo_project_name }}.id
-  name               = "{{ keystone_demo_project_user }}"
+resource "openstack_identity_user_v3" "{{ demo_project_user }}" {
+  default_project_id = openstack_identity_project_v3.{{ demo_project_name }}.id
+  name               = "{{ demo_project_user }}"
   password = "password123"
   ignore_change_password_upon_first_use = true
   domain_id   = data.openstack_identity_project_v3.{{ keystone_init_project }}.id
 }
 
-resource "openstack_identity_user_v3" "{{ keystone_glance_user }}" {
-  default_project_id = openstack_identity_project_v3.{{ keystone_demo_project_name }}.id
-  name               = "{{ keystone_glance_user }}"
-  password = "{{ keystone_glance_pass }}"
+resource "openstack_identity_user_v3" "{{ glance_user }}" {
+  default_project_id = openstack_identity_project_v3.{{ demo_project_name }}.id
+  name               = "{{ glance_user }}"
+  password = "{{ glance_pass }}"
   ignore_change_password_upon_first_use = true
   domain_id   = data.openstack_identity_project_v3.{{ keystone_init_project }}.id
 }
 
-resource "openstack_identity_user_v3" "{{ keystone_placement_user }}" {
-  default_project_id = openstack_identity_project_v3.{{ keystone_demo_project_name }}.id
-  name               = "{{ keystone_placement_user }}"
-  password = "{{ keystone_placement_pass }}"
+resource "openstack_identity_user_v3" "{{ placement_user }}" {
+  default_project_id = openstack_identity_project_v3.{{ demo_project_name }}.id
+  name               = "{{ placement_user }}"
+  password = "{{ placement_pass }}"
   ignore_change_password_upon_first_use = true
   domain_id   = data.openstack_identity_project_v3.{{ keystone_init_project }}.id
 }
 
-resource "openstack_identity_role_v3" "{{ keystone_demo_project_role }}" {
-  name               = "{{ keystone_demo_project_role }}"
+resource "openstack_identity_user_v3" "{{ nova_user }}" {
+  default_project_id = openstack_identity_project_v3.{{ demo_project_name }}.id
+  name               = "{{ nova_user }}"
+  password = "{{ nova_pass }}"
+  ignore_change_password_upon_first_use = true
+  domain_id   = data.openstack_identity_project_v3.{{ keystone_init_project }}.id
 }
 
-resource "openstack_identity_role_assignment_v3" "role_assignment_{{ keystone_demo_project_user }}" {
-  user_id    = openstack_identity_user_v3.{{ keystone_demo_project_user }}.id
-  project_id = openstack_identity_project_v3.{{ keystone_demo_project_name }}.id
-  role_id    = openstack_identity_role_v3.{{ keystone_demo_project_role }}.id
+resource "openstack_identity_role_v3" "{{ demo_project_role }}" {
+  name               = "{{ demo_project_role }}"
 }
 
-resource "openstack_identity_role_assignment_v3" "role_assignment_{{ keystone_glance_user }}" {
-  user_id    = openstack_identity_user_v3.{{ keystone_glance_user }}.id
-  project_id = openstack_identity_project_v3.service.id
+resource "openstack_identity_role_assignment_v3" "role_assignment_{{ demo_project_user }}" {
+  user_id    = openstack_identity_user_v3.{{ demo_project_user }}.id
+  project_id = openstack_identity_project_v3.{{ demo_project_name }}.id
+  role_id    = openstack_identity_role_v3.{{ demo_project_role }}.id
+}
+
+resource "openstack_identity_role_assignment_v3" "role_assignment_{{ glance_user }}" {
+  user_id    = openstack_identity_user_v3.{{ glance_user }}.id
+  project_id = openstack_identity_project_v3.{{ keystone_project_name }}.id
   role_id    = data.openstack_identity_role_v3.{{ admin_user }}.id
 }
 
-resource "openstack_identity_role_assignment_v3" "role_assignment_{{ keystone_placement_user }}" {
-  user_id    = openstack_identity_user_v3.{{ keystone_placement_user }}.id
-  project_id = openstack_identity_project_v3.service.id
+resource "openstack_identity_role_assignment_v3" "role_assignment_{{ placement_user }}" {
+  user_id    = openstack_identity_user_v3.{{ placement_user }}.id
+  project_id = openstack_identity_project_v3.{{ keystone_project_name }}.id
+  role_id    = data.openstack_identity_role_v3.{{ admin_user }}.id
+}
+
+resource "openstack_identity_role_assignment_v3" "role_assignment_{{ nova_user }}" {
+  user_id    = openstack_identity_user_v3.{{ nova_user }}.id
+  project_id = openstack_identity_project_v3.{{ keystone_project_name }}.id
   role_id    = data.openstack_identity_role_v3.{{ admin_user }}.id
 }

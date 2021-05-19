@@ -14,9 +14,9 @@ resource "openstack_identity_project_v3" "{{ keystone_init_project }}" {
   description = "{{ keystone_init_project_desc }}"
 }
 
-resource "openstack_identity_project_v3" "{{ keystone_demo_project_name }}" {
-  name        = "{{ keystone_demo_project_name }}"
-  description = "{{ keystone_demo_project_desc }}"
+resource "openstack_identity_project_v3" "{{ demo_project_name }}" {
+  name        = "{{ demo_project_name }}"
+  description = "{{ demo_project_desc }}"
   domain_id   = data.openstack_identity_project_v3.{{ keystone_init_project }}.id
 }
 

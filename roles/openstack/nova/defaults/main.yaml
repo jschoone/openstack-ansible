@@ -1,0 +1,16 @@
+---
+nova_user: nova
+nova_pass: password123
+nova_group: nova
+nova_database: nova
+nova_database_api: nova_api
+nova_database_cell0: nova_cell0
+nova_database_user: nova
+nova_database_pass: NOVA_DBPASS
+nova_database_provider: fernet
+nova_packages:
+- openstack-nova-compute
+- openstack-nova-api
+- openstack-nova-conductor
+- openstack-nova-novncproxy
+- openstack-nova-scheduler

@@ -1,13 +1,20 @@
-resource "openstack_identity_service_v3" "{{ keystone_glance_service }}" {
-  name = "{{ keystone_glance_service }}"
-  description = "{{ keystone_glance_service_desc }}"
-  type = "{{ keystone_glance_service_type }}"
-  region = "{{ keystone_region }}"
+resource "openstack_identity_service_v3" "{{ glance_service }}" {
+  name = "{{ glance_service }}"
+  description = "{{ glance_service_desc }}"
+  type = "{{ glance_service_type }}"
+  region = "{{ default_region }}"
 }
 
-resource "openstack_identity_service_v3" "{{ keystone_placement_service }}" {
-  name = "{{ keystone_placement_service }}"
-  description = "{{ keystone_placement_service_desc }}"
-  type = "{{ keystone_placement_service_type }}"
-  region = "{{ keystone_region }}"
+resource "openstack_identity_service_v3" "{{ placement_service }}" {
+  name = "{{ placement_service }}"
+  description = "{{ placement_service_desc }}"
+  type = "{{ placement_service_type }}"
+  region = "{{ default_region }}"
+}
+
+resource "openstack_identity_service_v3" "{{ nova_service }}" {
+  name = "{{ nova_service }}"
+  description = "{{ nova_service_desc }}"
+  type = "{{ nova_service_type }}"
+  region = "{{ default_region }}"
 }
