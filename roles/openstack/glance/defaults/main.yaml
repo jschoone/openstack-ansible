@@ -1,10 +1,10 @@
 ---
-controller_hostname: "{{ groups['controller'][0] }}"
+controller_hostname: "{{ groups['controller_hosts'][0] }}"
 keystone_api_url: http://{{ controller_hostname }}:5000
 memcached_servers_url: "{{ controller_hostname }}:11211"
 database_user: root
 database_pass: overrideme
-database_host: "{{ hostvars[groups['controller'][0]]['ansible_facts'][management_interface]['ipv4']['address'] }}"
+database_host: "{{ hostvars[groups['controller_hosts'][0]]['ansible_facts'][management_interface]['ipv4']['address'] }}"
 database_dir: /var/lib/mysql
 database_socket: "{{ _database_socket[ansible_os_family] }}"
 _database_socket:

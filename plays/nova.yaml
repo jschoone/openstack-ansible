@@ -1,6 +1,6 @@
 ---
 - name: Install Nova
-  hosts: nova
+  hosts: compute_hosts
   become: true
   environment: "{{ proxy_env }}"
   roles:

@@ -1,6 +1,6 @@
 ---
 - name: Install Controller
-  hosts: controller
+  hosts: controller_hosts
   become: true
   vars:
     proxy_url: ""

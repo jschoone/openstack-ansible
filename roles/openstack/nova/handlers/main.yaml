@@ -3,3 +3,33 @@
   service:
     name: openstack-nova-compute
     state: restarted
+  listen: "restart openstack-nova"
+  when: '"compute_hosts" in group_names'
+
+- name: restart openstack-nova-api
+  service:
+    name: openstack-nova-api
+    state: restarted
+  listen: "restart openstack-nova"
+  when: '"controller_hosts" in group_names'
+
+- name: restart openstack-nova-scheduler
+  service:
+    name: openstack-nova-scheduler
+    state: restarted
+  listen: "restart openstack-nova"
+  when: '"controller_hosts" in group_names'
+
+- name: restart openstack-nova-conductor
+  service:
+    name: openstack-nova-conductor
+    state: restarted
+  listen: "restart openstack-nova"
+  when: '"controller_hosts" in group_names'
+
+- name: restart openstack-nova-novncproxy
+  service:
+    name: openstack-nova-novncproxy
+    state: restarted
+  listen: "restart openstack-nova"
+  when: '"controller_hosts" in group_names'

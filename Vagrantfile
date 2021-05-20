@@ -12,7 +12,7 @@ Vagrant.configure("2") do |config|
   net_ip = "192.168.51"
 
   [
-    ["controller", "#{net_ip}.10", "2048", "centos/8"],
+    ["controller", "#{net_ip}.10", "4096", "centos/8"],
   ].each do |vmname,ip,mem,os|
     config.vm.define "#{vmname}" do |vm_config|
       vm_config.vm.provider "virtualbox" do |vb|

@@ -10,7 +10,7 @@
     create: true
     path: /etc/hosts
     block: |
-        {{ hostvars[groups['controller'][0]]['ansible_facts'][management_interface]['ipv4']['address'] }} controller
+        {{ hostvars[groups['controller_hosts'][0]]['ansible_facts'][management_interface]['ipv4']['address'] }} controller
         {% for host in groups['all'] %}
         {{ hostvars[host]['ansible_facts'][management_interface]['ipv4']['address'] }} {{ host }}
         {% endfor %}

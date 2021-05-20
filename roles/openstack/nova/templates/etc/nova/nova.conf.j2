@@ -6,6 +6,9 @@ my_ip = {{ ansible_facts[management_interface]['ipv4']['address'] }}
 [api_database]
 connection = mysql+pymysql://{{ nova_database_user }}:{{ nova_database_pass }}@{{ controller_hostname }}/{{ nova_database_api }}
 
+[database]
+connection = mysql+pymysql://{{ nova_database_user }}:{{ nova_database_pass }}@{{ controller_hostname }}/{{ nova_database }}
+
 [api]
 auth_strategy = {{ api_auth_strategy }}
 

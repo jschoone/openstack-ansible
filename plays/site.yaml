@@ -2,7 +2,7 @@
 - import_playbook: base.yaml
 - import_playbook: controller.yaml
 - import_playbook: keystone.yaml
+- import_playbook: terraform.yaml
 - import_playbook: glance.yaml
 - import_playbook: placement.yaml
 - import_playbook: nova.yaml
-- import_playbook: terraform.yaml

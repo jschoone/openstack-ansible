@@ -39,6 +39,14 @@
   notify:
   - restart httpd
 
+- name: Configure Placement httpd
+  copy:
+    src: etc/httpd/conf.d/00-placement-reqs.conf
+    dest: /etc/httpd/conf.d/00-placement-reqs.conf
+    backup: true
+  notify:
+  - restart httpd
+
 - name: Populate the Placement service database
   command: placement-manage db sync
   become_user: "{{ placement_user }}"

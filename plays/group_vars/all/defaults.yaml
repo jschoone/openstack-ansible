@@ -1,8 +1,8 @@
-controller_hostname: "{{ groups['controller'][0] }}"
+controller_hostname: "{{ groups['controller_hosts'][0] }}"
 
 database_user: root
 database_pass: overrideme
-database_host: "{{ hostvars[groups['controller'][0]]['ansible_facts'][management_interface]['ipv4']['address'] }}"
+database_host: "{{ hostvars[groups['controller_hosts'][0]]['ansible_facts'][management_interface]['ipv4']['address'] }}"
 database_dir: /var/lib/mysql
 database_socket: "{{ _database_socket[ansible_os_family] }}"
 _database_socket:
@@ -72,6 +72,10 @@ nova_database_cell0: nova_cell0
 nova_database_user: nova
 nova_database_pass: NOVA_DBPASS
 nova_database_provider: fernet
+nova_endpoint_url: "{{ controller_hostname }}:8774/v2.1"
+nova_service: nova
+nova_service_desc: "OpenStack Compute"
+nova_service_type: compute
 
 
 api_auth_strategy: keystone

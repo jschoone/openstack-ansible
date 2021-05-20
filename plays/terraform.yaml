@@ -1,6 +1,6 @@
 ---
 - name: Run Terraform
-  hosts: controller[0]
+  hosts: controller_hosts[0]
   #become: true
   environment: "{{ proxy_env }}"
   roles:

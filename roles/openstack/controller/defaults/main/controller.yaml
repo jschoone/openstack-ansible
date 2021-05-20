@@ -1,2 +1,2 @@
 ---
-controller_hostname: "{{ groups['controller'][0] }}"
+controller_hostname: "{{ groups['controller_hosts'][0] }}"

@@ -4,10 +4,10 @@
   tasks:
   - name: print first controller host
     debug:
-      var: hostvars[groups['controller'][0]]
+      var: hostvars[groups['controller_hosts'][0]]
   - name: print first controller host name
     debug:
-      var: groups['controller'][0]
+      var: groups['controller_hosts'][0]
   - name: print first controller host name
     debug:
-      msg: Moin {{ groups['controller'][0] }}
+      msg: Moin {{ groups['controller_hosts'][0] }}

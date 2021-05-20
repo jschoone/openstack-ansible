@@ -30,7 +30,7 @@
     stat:
       path: "{{ database_dir }}/{{ nova_database }}"
     register: nova_db_dir
-  when: "'controller' in group_names"
+  when: "'controller_hosts' in group_names"
 
 - name: Install components
   package:
@@ -43,7 +43,57 @@
     dest: /etc/nova/nova.conf
     backup: true
   notify:
-  - restart openstack-nova
+  - "restart openstack-nova"
+
+- name: Nova Commands
+  block:
+  - name: Populate the Nova api database
+    command: nova-manage api_db sync
+    become_user: "{{ nova_user }}"
+    become: true
+  - name: Register the cell0 database
+    command: nova-manage cell_v2 map_cell0
+    become_user: "{{ nova_user }}"
+    become: true
+  - name: Create the cell1 cell
+    command: nova-manage cell_v2 create_cell --name=cell1
+    become_user: "{{ nova_user }}"
+    become: true
+  - name: Populate the Nova service database
+    command: nova-manage db sync
+    become_user: "{{ nova_user }}"
+    become: true
+  when: nova_db_dir.stat.blocks == 0 and 'controller_hosts' in group_names
+
+- name: Enable Compute Services for Controller
+  service:
+    name: "{{ item }}"
+    state: started
+    enabled: true
+  with_items:
+  - openstack-nova-api
+  - openstack-nova-scheduler
+  - openstack-nova-conductor
+  - openstack-nova-novncproxy
+  when: "'controller_hosts' in group_names"
+
+      #  - name: restart openstack-nova-scheduler
+      #    service:
+      #      name: openstack-nova-scheduler
+      #      state: started
+      #      enabled: true
+      #
+      #  - name: restart openstack-nova-conductor
+      #    service:
+      #      name: openstack-nova-conductor
+      #      state: started
+      #      enabled: true
+      #
+      #  - name: restart openstack-nova-novncproxy
+      #    service:
+      #      name: openstack-nova-novncproxy
+      #      state: started
+      #      enabled: true
 
 - name: Enable Nova-Compute and Libvirt
   block:
@@ -55,11 +105,6 @@
   - name: enable libvirtd
     service:
       name: libvirtd
+      state: started
       enabled: true
-  when: "'compute' in group_names"
-
-- name: Populate the Nova service database
-  command: nova-manage api_db sync
-  become_user: "{{ nova_user }}"
-  become: true
-  when: nova_db_dir.stat.blocks == 0
+  when: "'compute_hosts' in group_names"
