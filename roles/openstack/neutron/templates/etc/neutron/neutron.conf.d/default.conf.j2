@@ -1,0 +1,6 @@
+[DEFAULT]
+core_plugin = {{ neutron_core_plugin }}
+service_plugins = {{ neutron_service_plugins }}
+allow_overlapping_ips = {{ neutron_allow_overlapping_ips }}
+transport_url = rabbit://{{ mq_user }}:{{ mq_pass }}@{{ controller_hostname }}:{{ mq_port }}/
+auth_strategy: {{ api_auth_strategy }}

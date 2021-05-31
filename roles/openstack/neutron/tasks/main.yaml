@@ -1,0 +1,80 @@
+---
+- name: Create database {{ neutron_database }}
+  mysql_db:
+    name: "{{ neutron_database }}"
+    login_user: "{{ database_user }}"
+    login_password: "{{ database_pass }}"
+    login_unix_socket: "{{ database_socket }}"
+    state: present
+
+- name: Grant User {{ neutron_database_user }} All Privileges on {{ neutron_database }}
+  mysql_user:
+    name: "{{ neutron_database_user }}"
+    password: "{{ neutron_database_pass }}"
+    priv: "{{ neutron_database_privs }}"
+    host: "{{ item }}"
+    login_user: "{{ database_user }}"
+    login_password: "{{ database_pass }}"
+    login_unix_socket: "{{ database_socket }}"
+  with_items:
+  - localhost
+  - '%'
+  - "{{ database_host }}"
+
+- name: Get Database Dir Informations
+  stat:
+    path: "{{ database_dir }}/{{ neutron_database }}"
+  register: neutron_db_dir
+
+- name: Install components
+  package:
+    name: "{{ neutron_packages }}"
+    state: present
+
+- name: Make sure {{ neutron_conf_dir }} exists
+  file:
+    path: "{{ neutron_conf_dir }}"
+    state: directory
+    recurse: true
+
+- name: Configure Metadata Agent
+  template:
+    src: etc/neutron/metadata_agent.ini.j2
+    dest: /etc/neutron/metadata_agent.ini
+    backup: true
+
+- name: Configure Nova
+  template:
+    src: '{{ item.src }}'
+    dest: "{{ nova_conf_dir }}/{{ item.path | regex_replace('\\.j2$', '') }}"
+  with_filetree: '{{ role_path }}/templates/etc/nova/nova.conf.d'
+  when: item.state == 'file'
+  notify:
+  - restart openstack-nova-api
+
+- name: Configure Neutron
+  template:
+    src: '{{ item.src }}'
+    dest: "{{ neutron_conf_dir }}/{{ item.path | regex_replace('\\.j2$', '') }}"
+  with_filetree: '{{ role_path }}/templates/etc/neutron/neutron.conf.d'
+  when: item.state == 'file'
+  #  notify:
+  #  - restart openstack-nova-api
+
+
+    #  notify:
+    #  - restart httpd
+    #
+    #- name: Configure Neutron httpd
+    #  copy:
+    #    src: etc/httpd/conf.d/00-neutron-reqs.conf
+    #    dest: /etc/httpd/conf.d/00-neutron-reqs.conf
+    #    backup: true
+    #  notify:
+    #  - restart httpd
+    #
+    #- name: Populate the Neutron service database
+    #  command: neutron-manage db sync
+    #  become_user: "{{ neutron_user }}"
+    #  become: true
+    #  when: neutron_db_dir.stat.blocks == 0

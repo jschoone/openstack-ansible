@@ -34,6 +34,14 @@ resource "openstack_identity_user_v3" "{{ nova_user }}" {
   domain_id   = data.openstack_identity_project_v3.{{ keystone_init_project }}.id
 }
 
+resource "openstack_identity_user_v3" "{{ neutron_user }}" {
+  default_project_id = openstack_identity_project_v3.{{ demo_project_name }}.id
+  name               = "{{ neutron_user }}"
+  password = "{{ neutron_pass }}"
+  ignore_change_password_upon_first_use = true
+  domain_id   = data.openstack_identity_project_v3.{{ keystone_init_project }}.id
+}
+
 resource "openstack_identity_role_v3" "{{ demo_project_role }}" {
   name               = "{{ demo_project_role }}"
 }
@@ -58,6 +66,12 @@ resource "openstack_identity_role_assignment_v3" "role_assignment_{{ placement_u
 
 resource "openstack_identity_role_assignment_v3" "role_assignment_{{ nova_user }}" {
   user_id    = openstack_identity_user_v3.{{ nova_user }}.id
+  project_id = openstack_identity_project_v3.{{ keystone_project_name }}.id
+  role_id    = data.openstack_identity_role_v3.{{ admin_user }}.id
+}
+
+resource "openstack_identity_role_assignment_v3" "role_assignment_{{ neutron_user }}" {
+  user_id    = openstack_identity_user_v3.{{ neutron_user }}.id
   project_id = openstack_identity_project_v3.{{ keystone_project_name }}.id
   role_id    = data.openstack_identity_role_v3.{{ admin_user }}.id
 }

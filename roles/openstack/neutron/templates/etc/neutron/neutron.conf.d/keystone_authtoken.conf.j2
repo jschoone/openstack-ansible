@@ -1,0 +1,10 @@
+[keystone_authtoken]
+www_authenticate_uri = {{ keystone_api_url }}
+auth_url = {{ keystone_api_url }}
+memcached_servers = {{ memcached_servers_url }}
+auth_type = {{ keystone_auth_type }}
+project_domain_name = {{ default_user_domain_name }}
+user_domain_name = {{ default_project_domain_name }}
+project_name = {{ keystone_project_name }}
+username = {{ neutron_user }}
+password = {{ neutron_pass }}

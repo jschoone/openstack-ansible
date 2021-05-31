@@ -1,0 +1,7 @@
+---
+- name: restart openstack-nova-api
+  service:
+    name: openstack-nova-api
+    state: restarted
+  listen: "restart openstack-nova"
+  when: '"controller_hosts" in group_names'

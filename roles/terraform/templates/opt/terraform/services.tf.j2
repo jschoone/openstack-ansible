@@ -18,3 +18,10 @@ resource "openstack_identity_service_v3" "{{ nova_service }}" {
   type = "{{ nova_service_type }}"
   region = "{{ default_region }}"
 }
+
+resource "openstack_identity_service_v3" "{{ neutron_service }}" {
+  name = "{{ neutron_service }}"
+  description = "{{ neutron_service_desc }}"
+  type = "{{ neutron_service_type }}"
+  region = "{{ default_region }}"
+}

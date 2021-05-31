@@ -76,7 +76,7 @@ nova_endpoint_url: "{{ controller_hostname }}:8774/v2.1"
 nova_service: nova
 nova_service_desc: "OpenStack Compute"
 nova_service_type: compute
-
+nova_conf_dir: /etc/nova/nova.conf.d
 
 api_auth_strategy: keystone
 
@@ -103,6 +103,20 @@ placement_service: placement
 placement_service_desc: "OpenStack Placement"
 placement_service_type: placement
 placement_endpoint_url: "{{ controller_hostname }}:8778"
+
+neutron_user: neutron
+neutron_pass: password123
+neutron_group: neutron
+neutron_database: neutron
+neutron_database_user: neutron
+neutron_database_pass: NEUTRON_DBPASS
+neutron_database_privs: '*.*:ALL'
+neutron_database_provider: fernet
+neutron_service: neutron
+neutron_service_desc: "OpenStack Neutron"
+neutron_service_type: neutron
+neutron_endpoint_url: "{{ controller_hostname }}:9696"
+neutron_conf_dir: /etc/neutron/neutron.conf.d
 
 etcd_service: etcd
 etcd_listen_address: "{{ ansible_facts[management_interface]['ipv4']['address'] }}"

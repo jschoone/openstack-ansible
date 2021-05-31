@@ -27,3 +27,13 @@ resource "openstack_identity_endpoint_v3" "nova_endpoint_{{ endpoint_interface }
   name = "nova_{{ endpoint_interface }}"
 }
 {% endfor %}
+
+{% for endpoint_interface in endpoint_interfaces %}
+resource "openstack_identity_endpoint_v3" "neutron_endpoint_{{ endpoint_interface }}" {
+  interface = "{{ endpoint_interface }}"
+  url = "http://{{ neutron_endpoint_url }}"
+  endpoint_region = openstack_identity_service_v3.{{ neutron_service }}.region
+  service_id = openstack_identity_service_v3.{{ neutron_service }}.id
+  name = "neutron_{{ endpoint_interface }}"
+}
+{% endfor %}
