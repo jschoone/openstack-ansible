@@ -33,6 +33,12 @@
 
 - name: Make sure {{ neutron_conf_dir }} exists
   file:
+    path: "{{ nova_conf_dir }}"
+    state: directory
+    recurse: true
+
+- name: Make sure {{ neutron_conf_dir }} exists
+  file:
     path: "{{ neutron_conf_dir }}"
     state: directory
     recurse: true
@@ -61,6 +67,11 @@
   #  notify:
   #  - restart openstack-nova-api
 
+- name: Link ml2 Plugin
+  file:
+    src: "{{ neutron_ml2_plugin_path }}"
+    dest: /etc/neutron/plugin.ini
+    state: link
 
     #  notify:
     #  - restart httpd
@@ -73,8 +84,20 @@
     #  notify:
     #  - restart httpd
     #
-    #- name: Populate the Neutron service database
-    #  command: neutron-manage db sync
-    #  become_user: "{{ neutron_user }}"
-    #  become: true
-    #  when: neutron_db_dir.stat.blocks == 0
+- name: Populate the Neutron service database
+  command: neutron-db-manage --config-dir {{ neutron_conf_dir }} --config-file {{ neutron_ml2_plugin_path }} upgrade head
+  become_user: "{{ neutron_user }}"
+  become: true
+  when: neutron_db_dir.stat.blocks == 0
+
+- name: Enable Network Services for Controller
+  service:
+    name: "{{ item }}"
+    state: started
+    enabled: true
+  with_items:
+  - neutron-linuxbridge-agent
+  - neutron-dhcp-agent
+  - neutron-metadata-agent
+  - neutron-l3-agent
+  when: "'controller_hosts' in group_names"
