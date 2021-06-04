@@ -5,3 +5,31 @@
     state: restarted
   listen: "restart openstack-nova"
   when: '"controller_hosts" in group_names'
+
+- name: restart neutron-dhcp-agent
+  service:
+    name: neutron-dhcp-agent
+    state: restarted
+  listen: "restart neutron"
+  when: '"controller_hosts" in group_names'
+
+- name: restart neutron-metadata-agent
+  service:
+    name: neutron-metadata-agent
+    state: restarted
+  listen: "restart neutron"
+  when: '"controller_hosts" in group_names'
+
+- name: restart neutron-l3-agent
+  service:
+    name: neutron-l3-agent
+    state: restarted
+  listen: "restart neutron"
+  when: '"controller_hosts" in group_names'
+
+- name: restart neutron-linuxbridge-agent
+  service:
+    name: neutron-l3-agent
+    state: restarted
+  listen: "restart neutron"
+  when: ("controller_hosts" in group_names) or ("compute_hosts" in group_names)

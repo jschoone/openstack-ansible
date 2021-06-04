@@ -1,0 +1,14 @@
+[ml2]
+type_drivers = {{ ml2_type_drivers }}
+tenant_network_types = {{ ml2_tenant_network_types }}
+mechanism_drivers = {{ ml2_mechanism_drivers }}
+extension_drivers = {{ ml2_extension_drivers }}
+
+[ml2_type_flat]
+flat_networks = {{ ml2_type_flat_flat_networks }}
+
+[ml2_type_vxlan]
+vni_ranges = {{ ml2_type_vxlan_vni_ranges }}
+
+[securitygroup]
+enable_ipset = {{ ml2_securitygroup_enable_ipset }}

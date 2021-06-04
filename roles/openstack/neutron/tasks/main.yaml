@@ -31,7 +31,26 @@
     name: "{{ neutron_packages }}"
     state: present
 
-- name: Make sure {{ neutron_conf_dir }} exists
+- name: Modprobe br_netfilter
+  modprobe:
+    name: br_netfilter
+    state: present
+
+- name: Make br_netfilter persistent
+  copy:
+    src: files/etc/modules-load.d/modules.conf
+    dest: /etc/modules-load.d/modules.conf
+
+- name: Prepare Network for Kubernetes
+  sysctl:
+    name: "{{ item }}"
+    value: '1'
+    state: present
+  with_items:
+  - net.bridge.bridge-nf-call-iptables
+  - net.bridge.bridge-nf-call-ip6tables
+
+- name: Make sure {{ nova_conf_dir }} exists
   file:
     path: "{{ nova_conf_dir }}"
     state: directory
@@ -45,9 +64,19 @@
 
 - name: Configure Metadata Agent
   template:
-    src: etc/neutron/metadata_agent.ini.j2
-    dest: /etc/neutron/metadata_agent.ini
-    backup: true
+    src: '{{ item.src }}'
+    dest: "/etc/neutron/{{ item.path | regex_replace('\\.j2$', '') }}"
+  with_filetree: '{{ role_path }}/templates/etc/neutron'
+  when: item.state == 'file'
+  notify:
+  - restart neutron
+
+- name: Configure ML2-Plugin
+  template:
+    src: '{{ item.src }}'
+    dest: "/etc/neutron/plugins/ml2/{{ item.path | regex_replace('\\.j2$', '') }}"
+  with_filetree: '{{ role_path }}/templates/etc/neutron/plugins/ml2'
+  when: item.state == 'file'
 
 - name: Configure Nova
   template:
@@ -73,17 +102,6 @@
     dest: /etc/neutron/plugin.ini
     state: link
 
-    #  notify:
-    #  - restart httpd
-    #
-    #- name: Configure Neutron httpd
-    #  copy:
-    #    src: etc/httpd/conf.d/00-neutron-reqs.conf
-    #    dest: /etc/httpd/conf.d/00-neutron-reqs.conf
-    #    backup: true
-    #  notify:
-    #  - restart httpd
-    #
 - name: Populate the Neutron service database
   command: neutron-db-manage --config-dir {{ neutron_conf_dir }} --config-file {{ neutron_ml2_plugin_path }} upgrade head
   become_user: "{{ neutron_user }}"

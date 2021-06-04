@@ -30,6 +30,32 @@ neutron_allow_overlapping_ips: true
 neutron_metadata_proxy_shared_secret: METADATA_SECRET
 neutron_service_metadata_proxy: true
 neutron_ml2_plugin_path: /etc/neutron/plugins/ml2/ml2_conf.ini
+neutron_oslo_concurrency_lock_path: /var/lib/neutron/tmp
+
+## ml2 plugin
+ml2_type_drivers: flat,vlan,vxlan
+ml2_tenant_network_types: vxlan
+ml2_mechanism_drivers: linuxbridge,l2population
+ml2_extension_drivers: port_security
+ml2_type_flat_flat_networks: provider
+ml2_type_vxlan_vni_ranges: 1:1000
+ml2_securitygroup_enable_ipset: true
+
+## Linux bridge agent
+ml2_linuxbridge_physical_interface_mappings: provider:{{ provider_interface }}
+ml2_linuxbridge_vxlan_enable_vxlan: true
+ml2_linuxbridge_vxlan_local_ip: "{{ ansible_facts[provider_interface]['ipv4']['address'] }}"
+ml2_linuxbridge_vxlan_l2_population: true
+ml2_linuxbridge_securitygroup_enable_security_group: true
+ml2_linuxbridge_securitygroup_firewall_driver: neutron.agent.linux.iptables_firewall.IptablesFirewallDriver
+
+## layer-3 agent
+l3_interface_driver: linuxbridge
+
+## DHCP Agent
+dhcp_interface_driver: linuxbridge
+dhcp_driver: neutron.agent.linux.dhcp.Dnsmasq
+dhcp_enable_isolated_metadata: true
 
 keystone_auth_url: 'http://{{ controller_hostname }}:5000/v3'
 admin_pass: ADMIN_PASS

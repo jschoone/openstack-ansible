@@ -1,0 +1,11 @@
+[linux_bridge]
+physical_interface_mappings = {{ ml2_linuxbridge_physical_interface_mappings }}
+
+[vxlan]
+enable_vxlan = {{ ml2_linuxbridge_vxlan_enable_vxlan }}
+local_ip = {{ ml2_linuxbridge_vxlan_local_ip }}
+l2_population = {{ ml2_linuxbridge_vxlan_l2_population }}
+
+[securitygroup]
+enable_security_group = {{ ml2_linuxbridge_securitygroup_enable_security_group }}
+firewall_driver = {{ ml2_linuxbridge_securitygroup_firewall_driver }}
